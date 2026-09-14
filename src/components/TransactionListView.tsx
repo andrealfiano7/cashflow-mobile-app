@@ -276,14 +276,14 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                           input.click();
                         }}
                         className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-500 dark:text-slate-400 hover:bg-brand-50 hover:text-brand-600 hover:border-brand-200 dark:hover:bg-brand-500/10 dark:hover:text-brand-400 text-[10px] font-semibold flex items-center gap-1 transition-all disabled:opacity-50"
-                        title="Upload Bukti Susulan"
+                        title="Upload Bukti"
                       >
                         {uploadingId === tx.id ? (
                           <Loader2 className="w-3 h-3 animate-spin" />
                         ) : (
                           <Upload className="w-3 h-3" />
                         )}
-                        <span>Susulan</span>
+                        <span>Upload</span>
                       </button>
                     )}
 
