@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   X,
   Database,
   CheckCircle2,
   AlertCircle,
-  Copy,
-  Check,
-  RotateCcw,
+  HardDrive,
+  ShieldCheck,
 } from 'lucide-react';
 import { isSupabaseConfigured } from '../lib/supabase';
 
@@ -21,30 +20,20 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
   onClose,
   onResetData,
 }) => {
-  const [copied, setCopied] = useState(false);
-
   if (!isOpen) return null;
 
-  const envSample = `VITE_SUPABASE_URL=https://xyzcompany.supabase.co\nVITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`;
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(envSample);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] transition-colors">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+      <div className="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col transition-colors">
         {/* Header */}
-        <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
               <Database className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Konfigurasi Supabase Backend</h3>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">Database PostgreSQL & Storage Bukti</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Status Database</h3>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400">Penyimpanan Cloud Supabase</p>
             </div>
           </div>
           <button
@@ -56,82 +45,83 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
         </div>
 
         {/* Body */}
-        <div className="p-5 overflow-y-auto space-y-4 text-xs">
-          {/* Status Alert */}
+        <div className="p-5 space-y-4 text-xs">
           {isSupabaseConfigured ? (
-            <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-start gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="font-bold text-emerald-700 dark:text-emerald-400 text-xs">Supabase Terhubung!</h4>
-                <p className="text-[11px] text-emerald-800 dark:text-emerald-200/80 mt-0.5">
-                  Aplikasi saat ini terhubung langsung dengan Supabase Database dan Storage bucket <code className="bg-emerald-100 dark:bg-emerald-950 px-1 py-0.5 rounded font-mono">transfer-proofs</code>.
+            <>
+              {/* Connected Status Card */}
+              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2.5">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <h4 className="font-bold text-emerald-800 dark:text-emerald-300 text-sm">Supabase Terhubung!</h4>
+                <p className="text-[11px] text-emerald-700/90 dark:text-emerald-300/80 mt-1 leading-relaxed">
+                  Aplikasi kas Anda aktif dan tersinkronisasi langsung dengan database server cloud.
                 </p>
               </div>
-            </div>
+
+              {/* Status Details */}
+              <div className="space-y-2">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                    <Database className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+                    <span className="font-medium text-[11px]">Database Transaksi</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                    PostgreSQL Online
+                  </span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                    <HardDrive className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <span className="font-medium text-[11px]">Penyimpanan Bukti</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+                    transfer-proofs
+                  </span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <span className="font-medium text-[11px]">Keamanan & Sync</span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">
+                    Terenkripsi SSL
+                  </span>
+                </div>
+              </div>
+            </>
           ) : (
-            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="font-bold text-amber-700 dark:text-amber-400 text-xs">Mode Demo / Lokal Aktif</h4>
-                <p className="text-[11px] text-amber-800 dark:text-amber-200/80 mt-0.5">
-                  Kredensial Supabase belum dimasukkan di file <code className="bg-amber-100 dark:bg-slate-800 px-1 py-0.5 rounded text-amber-800 dark:text-amber-300 font-mono">.env</code>. Semua pencatatan transaksi & bukti saat ini tersimpan otomatis di browser secara interaktif.
-                </p>
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-center flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-2.5">
+                <AlertCircle className="w-6 h-6" />
               </div>
+              <h4 className="font-bold text-amber-800 dark:text-amber-300 text-sm">Mode Demo Aktif</h4>
+              <p className="text-[11px] text-amber-700/90 dark:text-amber-300/80 mt-1 leading-relaxed">
+                Supabase belum terhubung. Transaksi saat ini disimpan di penyimpanan lokal browser.
+              </p>
+              <button
+                onClick={() => {
+                  if (confirm('Kembalikan transaksi ke data demo awal?')) {
+                    onResetData();
+                    onClose();
+                  }
+                }}
+                className="mt-4 px-3 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 text-xs font-semibold"
+              >
+                Reset Data Demo
+              </button>
             </div>
           )}
 
-          {/* Setup Guide Steps */}
-          <div className="space-y-3">
-            <h4 className="font-bold uppercase text-[10px] tracking-wider text-slate-500 dark:text-slate-400">
-              Langkah Menghubungkan Supabase:
-            </h4>
-
-            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 space-y-1.5">
-              <p className="font-bold text-slate-800 dark:text-slate-200">1. Eksekusi Skrip SQL</p>
-              <p className="text-[11px] text-slate-600 dark:text-slate-400">
-                Buka tab <strong>SQL Editor</strong> di dashboard Supabase Anda, lalu salin isi file:
-              </p>
-              <code className="block bg-slate-100 dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-brand-700 dark:text-brand-400">
-                supabase/schema.sql
-              </code>
-            </div>
-
-            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 space-y-1.5">
-              <p className="font-bold text-slate-800 dark:text-slate-200">2. Isi Environment Variables</p>
-              <p className="text-[11px] text-slate-600 dark:text-slate-400">
-                Buka file <code className="text-slate-700 dark:text-slate-300 font-semibold">.env</code> di root proyek dan masukkan URL & Anon Key:
-              </p>
-              <div className="relative">
-                <pre className="bg-slate-100 dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-slate-800 dark:text-slate-300 overflow-x-auto">
-                  {envSample}
-                </pre>
-                <button
-                  onClick={handleCopy}
-                  className="absolute right-2 top-2 p-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white shadow-sm border border-slate-200 dark:border-slate-700 transition-colors"
-                  title="Salin contoh"
-                >
-                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Reset Demo Data Button */}
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">Ingin mereset contoh transaksi awal?</p>
-            <button
-              onClick={() => {
-                if (confirm('Kembalikan transaksi ke data demo awal?')) {
-                  onResetData();
-                  onClose();
-                }
-              }}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all"
-            >
-              <RotateCcw className="w-3 h-3 text-brand-600 dark:text-brand-400" />
-              <span>Reset Data</span>
-            </button>
-          </div>
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="w-full py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold text-xs shadow-md transition-all active:scale-[0.98]"
+          >
+            Tutup
+          </button>
         </div>
       </div>
     </div>
