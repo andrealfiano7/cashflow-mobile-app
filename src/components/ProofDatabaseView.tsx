@@ -7,7 +7,6 @@ import {
   Eye,
   CheckCircle2,
   FileText,
-  HardDrive,
 } from 'lucide-react';
 import type { Transaction, VerificationStatus } from '../types';
 import { formatRupiah, formatDateIndo, formatBytes } from '../lib/utils';
@@ -58,17 +57,6 @@ export const ProofDatabaseView: React.FC<ProofDatabaseViewProps> = ({
             <h2 className="text-sm font-bold text-slate-900 dark:text-white">Database Bukti Pembayaran</h2>
             <p className="text-[11px] text-slate-500 dark:text-slate-400">Arsip berkas transfer & verifikasi keuangan</p>
           </div>
-        </div>
-
-        {/* Bucket / Folder ID info */}
-        <div className="mt-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px]">
-          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-            <HardDrive className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-            <span>Supabase Storage Bucket:</span>
-          </div>
-          <span className="font-mono text-brand-700 dark:text-brand-400 bg-brand-50 dark:bg-brand-950/60 px-2 py-0.5 rounded border border-brand-200 dark:border-brand-800/40">
-            transfer-proofs
-          </span>
         </div>
       </div>
 
