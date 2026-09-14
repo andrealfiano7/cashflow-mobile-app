@@ -8,6 +8,8 @@ import {
   ArrowDownCircle,
   ArrowUpCircle,
   Calendar,
+  Upload,
+  Loader2,
 } from 'lucide-react';
 import type { Transaction } from '../types';
 import { formatRupiah, formatDateIndo } from '../lib/utils';
@@ -18,6 +20,7 @@ interface TransactionListViewProps {
   onOpenAddModal: () => void;
   onSelectProof: (tx: Transaction) => void;
   onDeleteTransaction: (id: string) => void;
+  onUploadProof: (id: string, file: File) => Promise<void>;
 }
 
 export const TransactionListView: React.FC<TransactionListViewProps> = ({
@@ -25,8 +28,10 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
   onOpenAddModal,
   onSelectProof,
   onDeleteTransaction,
+  onUploadProof,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<'all' | 'income' | 'expense'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
@@ -241,7 +246,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                   </div>
 
                   <div className="flex items-center justify-end gap-2 mt-2">
-                    {tx.proof_url && (
+                    {tx.proof_url ? (
                       <button
                         onClick={() => onSelectProof(tx)}
                         className="px-2 py-0.5 rounded-lg bg-brand-500/10 dark:bg-brand-500/15 border border-brand-500/30 text-brand-600 dark:text-brand-400 hover:bg-brand-500/25 text-[10px] font-semibold flex items-center gap-1 transition-all"
@@ -249,6 +254,36 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                       >
                         <FileCheck2 className="w-3 h-3" />
                         <span>Bukti</span>
+                      </button>
+                    ) : (
+                      <button
+                        disabled={uploadingId === tx.id}
+                        onClick={() => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = 'image/*,application/pdf';
+                          input.onchange = async (e) => {
+                            const file = (e.target as HTMLInputElement).files?.[0];
+                            if (file) {
+                              setUploadingId(tx.id);
+                              try {
+                                await onUploadProof(tx.id, file);
+                              } finally {
+                                setUploadingId(null);
+                              }
+                            }
+                          };
+                          input.click();
+                        }}
+                        className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-500 dark:text-slate-400 hover:bg-brand-50 hover:text-brand-600 hover:border-brand-200 dark:hover:bg-brand-500/10 dark:hover:text-brand-400 text-[10px] font-semibold flex items-center gap-1 transition-all disabled:opacity-50"
+                        title="Upload Bukti Susulan"
+                      >
+                        {uploadingId === tx.id ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <Upload className="w-3 h-3" />
+                        )}
+                        <span>Susulan</span>
                       </button>
                     )}
 

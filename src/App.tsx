@@ -15,6 +15,7 @@ import {
   addTransaction,
   deleteTransaction,
   updateTransactionStatus,
+  updateTransactionProof,
 } from './lib/supabase';
 import type { ActiveTab, Transaction, Category, VerificationStatus } from './types';
 import { Loader2 } from 'lucide-react';
@@ -95,6 +96,16 @@ export function App() {
     }
   };
 
+  // Handler: Upload Proof
+  const handleUploadProof = async (id: string, file: File) => {
+    try {
+      const updatedTx = await updateTransactionProof(id, file);
+      setTransactions(prev => prev.map(t => (t.id === id ? updatedTx : t)));
+    } catch (err: any) {
+      alert(`Gagal upload bukti: ${err.message || 'Terjadi kesalahan'}`);
+    }
+  };
+
   // Handler: Reset Demo Data
   const handleResetData = () => {
     localStorage.removeItem('cashflow_app_transactions');
@@ -136,6 +147,7 @@ export function App() {
                   onOpenAddModal={() => setIsAddModalOpen(true)}
                   onSelectProof={tx => setSelectedProofTx(tx)}
                   onDeleteTransaction={handleDeleteTransaction}
+                  onUploadProof={handleUploadProof}
                 />
               )}
 

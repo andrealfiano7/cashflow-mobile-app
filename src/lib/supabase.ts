@@ -336,6 +336,40 @@ export async function updateTransactionStatus(
   }
 }
 
+export async function updateTransactionProof(
+  id: string,
+  file: File
+): Promise<Transaction> {
+  const uploaded = await uploadProofFile(file);
+  const updates = {
+    proof_url: uploaded.url,
+    proof_file_name: uploaded.name,
+    proof_file_size: uploaded.size,
+    proof_file_type: uploaded.type,
+    updated_at: new Date().toISOString()
+  };
+
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from('transactions')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data as Transaction;
+  }
+
+  const list = getLocalTransactions();
+  const idx = list.findIndex(t => t.id === id);
+  if (idx !== -1) {
+    list[idx] = { ...list[idx], ...updates };
+    saveLocalTransactions(list);
+    return list[idx];
+  }
+  throw new Error('Transaksi tidak ditemukan');
+}
+
 export async function deleteTransaction(id: string): Promise<void> {
   if (isSupabaseConfigured && supabase) {
     const { error } = await supabase
