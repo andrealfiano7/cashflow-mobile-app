@@ -8,6 +8,7 @@ import { ReportsView } from './components/ReportsView';
 import { TransactionModal } from './components/TransactionModal';
 import { ProofLightboxModal } from './components/ProofLightboxModal';
 import { SupabaseConfigModal } from './components/SupabaseConfigModal';
+import { useTheme } from './lib/theme';
 import {
   fetchTransactions,
   fetchCategories,
@@ -19,6 +20,7 @@ import type { ActiveTab, Transaction, Category, VerificationStatus } from './typ
 import { Loader2 } from 'lucide-react';
 
 export function App() {
+  const { theme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -88,17 +90,21 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex justify-center text-slate-100">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex justify-center text-slate-800 dark:text-slate-100 transition-colors">
       {/* Mobile Frame Container */}
-      <div className="w-full max-w-md min-h-screen bg-slate-900 flex flex-col relative shadow-2xl border-x border-slate-800/80">
+      <div className="w-full max-w-md min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col relative shadow-2xl border-x border-slate-200 dark:border-slate-800/80 transition-colors">
         {/* Top App Bar */}
-        <Header onOpenConfig={() => setIsConfigModalOpen(true)} />
+        <Header
+          onOpenConfig={() => setIsConfigModalOpen(true)}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
 
         {/* Main Content Area */}
         <main className="flex-1 p-4 overflow-y-auto">
           {isLoading ? (
-            <div className="h-64 flex flex-col items-center justify-center gap-3 text-slate-400">
-              <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
+            <div className="h-64 flex flex-col items-center justify-center gap-3 text-slate-500 dark:text-slate-400">
+              <Loader2 className="w-8 h-8 animate-spin text-brand-600 dark:text-brand-500" />
               <p className="text-xs font-semibold">Memuat Data Arus Kas...</p>
             </div>
           ) : (

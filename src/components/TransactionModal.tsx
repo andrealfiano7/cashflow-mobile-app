@@ -146,16 +146,16 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-md bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-3xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl transition-colors">
         {/* Modal Header */}
-        <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-white">Catat Transaksi Baru</h3>
-            <p className="text-xs text-slate-400">Pemasukan, pengeluaran & upload bukti</p>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Catat Transaksi Baru</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Pemasukan, pengeluaran & upload bukti</p>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -164,14 +164,14 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         {/* Form Body (Scrollable) */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 space-y-4">
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {/* Type Toggle: Pemasukan vs Pengeluaran */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-800 rounded-2xl border border-slate-700/60">
+          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700/60">
             <button
               type="button"
               onClick={() => {
@@ -181,7 +181,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                 type === 'expense'
                   ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
               <TrendingDown className="w-4 h-4" />
@@ -197,7 +197,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                 type === 'income'
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
               <TrendingUp className="w-4 h-4" />
@@ -207,9 +207,9 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
           {/* Amount Input */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Nominal (Rupiah)</label>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Nominal (Rupiah)</label>
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400 dark:text-slate-500">
                 Rp
               </span>
               <input
@@ -218,7 +218,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 placeholder="0"
                 value={amountStr}
                 onChange={handleAmountChange}
-                className="w-full bg-slate-850 border border-slate-700/80 rounded-2xl pl-11 pr-4 py-3 text-lg font-extrabold text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors"
+                className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-300 dark:border-slate-700/80 rounded-2xl pl-11 pr-4 py-3 text-lg font-extrabold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors shadow-inner"
                 autoFocus
               />
             </div>
@@ -226,8 +226,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
           {/* Category Picker */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Kategori Pos Dana</label>
-            <div className="grid grid-cols-2 gap-2 max-h-36 overflow-y-auto p-1 bg-slate-850/50 rounded-2xl border border-slate-800">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Kategori Pos Dana</label>
+            <div className="grid grid-cols-2 gap-2 max-h-36 overflow-y-auto p-1 bg-slate-50/60 dark:bg-slate-850/50 rounded-2xl border border-slate-200 dark:border-slate-800">
               {availableCategories.map(cat => (
                 <button
                   key={cat.id}
@@ -235,8 +235,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                   onClick={() => setCategoryName(cat.name)}
                   className={`p-2 rounded-xl border text-left flex items-center gap-2 transition-all ${
                     currentCategory === cat.name
-                      ? 'border-brand-500 bg-brand-500/10 text-white font-bold'
-                      : 'border-slate-800 bg-slate-800/60 text-slate-300 hover:border-slate-700'
+                      ? 'border-brand-500 bg-brand-500/10 text-brand-700 dark:text-white font-bold'
+                      : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
                   }`}
                 >
                   <div
@@ -254,37 +254,37 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
           {/* Date & Description */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300">Tanggal</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Tanggal</label>
               <div className="relative">
                 <input
                   type="date"
                   value={date}
                   onChange={e => setDate(e.target.value)}
-                  className="w-full bg-slate-850 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500"
+                  className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-300 dark:border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-brand-500"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300">Keterangan / Catatan</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Keterangan / Catatan</label>
               <input
                 type="text"
                 placeholder="Contoh: Belanja mingguan supermarket"
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                className="w-full bg-slate-850 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
+                className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-300 dark:border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-brand-500"
               />
             </div>
           </div>
 
-          {/* Upload Bukti Transfer (Featured Requirement) */}
+          {/* Upload Bukti Transfer */}
           <div className="space-y-1.5 pt-1">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <span>Upload Bukti Transfer / Struk</span>
                 <span className="text-[10px] text-slate-400 font-normal">(Opsional)</span>
               </label>
-              <span className="text-[10px] text-slate-500">Maks 10MB</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500">Maks 10MB</span>
             </div>
 
             <input
@@ -298,12 +298,12 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
             {!selectedFile ? (
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-slate-700 hover:border-brand-500/70 bg-slate-850/40 rounded-2xl p-4 text-center cursor-pointer transition-all hover:bg-slate-800/40 group"
+                className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-brand-500 bg-slate-50/60 dark:bg-slate-850/40 rounded-2xl p-4 text-center cursor-pointer transition-all hover:bg-slate-100 dark:hover:bg-slate-800/40 group"
               >
-                <div className="w-10 h-10 rounded-full bg-slate-800 group-hover:bg-brand-500/20 text-slate-400 group-hover:text-brand-400 flex items-center justify-center mx-auto mb-2 transition-colors">
+                <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 group-hover:bg-brand-500/20 text-slate-500 dark:text-slate-400 group-hover:text-brand-500 dark:group-hover:text-brand-400 flex items-center justify-center mx-auto mb-2 transition-colors">
                   <Camera className="w-5 h-5" />
                 </div>
-                <p className="text-xs font-semibold text-slate-200">
+                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                   Ambil Foto Kamera / Pilih Berkas
                 </p>
                 <p className="text-[10px] text-slate-500 mt-0.5">
@@ -311,24 +311,24 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 </p>
               </div>
             ) : (
-              <div className="bg-slate-850 rounded-2xl p-3 border border-slate-700 flex items-center gap-3">
+              <div className="bg-slate-50 dark:bg-slate-850 rounded-2xl p-3 border border-slate-200 dark:border-slate-700 flex items-center gap-3">
                 {previewUrl ? (
                   <img
                     src={previewUrl}
                     alt="Preview Bukti"
-                    className="w-14 h-14 object-cover rounded-xl border border-slate-700 shrink-0"
+                    className="w-14 h-14 object-cover rounded-xl border border-slate-200 dark:border-slate-700 shrink-0"
                   />
                 ) : (
-                  <div className="w-14 h-14 rounded-xl bg-slate-800 border border-slate-700 flex flex-col items-center justify-center text-rose-400 shrink-0">
+                  <div className="w-14 h-14 rounded-xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center text-rose-500 shrink-0">
                     <FileText className="w-6 h-6" />
                     <span className="text-[8px] font-bold">PDF</span>
                   </div>
                 )}
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-white truncate">{selectedFile.name}</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">{formatBytes(selectedFile.size)}</p>
-                  <span className="text-[10px] text-brand-400 font-semibold flex items-center gap-1 mt-1">
+                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{selectedFile.name}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{formatBytes(selectedFile.size)}</p>
+                  <span className="text-[10px] text-brand-600 dark:text-brand-400 font-semibold flex items-center gap-1 mt-1">
                     <Check className="w-3 h-3" /> Berkas siap diupload
                   </span>
                 </div>
@@ -336,7 +336,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 <button
                   type="button"
                   onClick={removeFile}
-                  className="p-2 text-slate-400 hover:text-rose-400 rounded-xl hover:bg-slate-800 transition-colors"
+                  className="p-2 text-slate-400 hover:text-rose-500 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
                   title="Hapus berkas"
                 >
                   <Trash2 className="w-4 h-4" />
