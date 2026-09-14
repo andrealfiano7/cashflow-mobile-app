@@ -39,3 +39,14 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Safe area padding for bottom nav */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Remove tap highlight on all interactive elements */
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
