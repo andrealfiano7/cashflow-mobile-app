@@ -188,7 +188,7 @@ export async function fetchTransactions(): Promise<Transaction[]> {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      if (data && data.length > 0) return data as Transaction[];
+      if (data) return data as Transaction[];
     } catch (err) {
       console.warn('Supabase fetch failed, falling back to local data:', err);
     }
@@ -204,7 +204,7 @@ export async function fetchCategories(): Promise<Category[]> {
         .select('*')
         .order('name');
       if (error) throw error;
-      if (data && data.length > 0) return data as Category[];
+      if (data) return data as Category[];
     } catch (err) {
       console.warn('Supabase categories fetch failed, falling back to local:', err);
     }
@@ -291,18 +291,14 @@ export async function addTransaction(
   };
 
   if (isSupabaseConfigured && supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('transactions')
-        .insert([transactionData])
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from('transactions')
+      .insert([transactionData])
+      .select()
+      .single();
 
-      if (error) throw error;
-      return data as Transaction;
-    } catch (err) {
-      console.warn('Supabase insert error, saving locally:', err);
-    }
+    if (error) throw error;
+    return data as Transaction;
   }
 
   // Local fallback
@@ -324,16 +320,12 @@ export async function updateTransactionStatus(
   status: VerificationStatus
 ): Promise<void> {
   if (isSupabaseConfigured && supabase) {
-    try {
-      const { error } = await supabase
-        .from('transactions')
-        .update({ verification_status: status, updated_at: new Date().toISOString() })
-        .eq('id', id);
-      if (error) throw error;
-      return;
-    } catch (err) {
-      console.warn('Supabase update status failed, updating locally:', err);
-    }
+    const { error } = await supabase
+      .from('transactions')
+      .update({ verification_status: status, updated_at: new Date().toISOString() })
+      .eq('id', id);
+    if (error) throw error;
+    return;
   }
 
   const list = getLocalTransactions();
@@ -346,16 +338,12 @@ export async function updateTransactionStatus(
 
 export async function deleteTransaction(id: string): Promise<void> {
   if (isSupabaseConfigured && supabase) {
-    try {
-      const { error } = await supabase
-        .from('transactions')
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
-      return;
-    } catch (err) {
-      console.warn('Supabase delete failed, deleting locally:', err);
-    }
+    const { error } = await supabase
+      .from('transactions')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+    return; // Stop here if using supabase
   }
 
   const list = getLocalTransactions().filter(t => t.id !== id);

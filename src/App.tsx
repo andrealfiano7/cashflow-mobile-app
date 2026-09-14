@@ -59,27 +59,39 @@ export function App() {
     data: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>,
     file?: File | null
   ) => {
-    const created = await addTransaction(data, file);
-    setTransactions(prev => [created, ...prev]);
+    try {
+      const created = await addTransaction(data, file);
+      setTransactions(prev => [created, ...prev]);
+    } catch (err: any) {
+      alert(`Gagal menambah transaksi: ${err.message || 'Terjadi kesalahan'}`);
+    }
   };
 
   // Handler: Delete Transaction
   const handleDeleteTransaction = async (id: string) => {
-    await deleteTransaction(id);
-    setTransactions(prev => prev.filter(t => t.id !== id));
-    if (selectedProofTx?.id === id) {
-      setSelectedProofTx(null);
+    try {
+      await deleteTransaction(id);
+      setTransactions(prev => prev.filter(t => t.id !== id));
+      if (selectedProofTx?.id === id) {
+        setSelectedProofTx(null);
+      }
+    } catch (err: any) {
+      alert(`Gagal menghapus transaksi: ${err.message || 'Terjadi kesalahan'}`);
     }
   };
 
   // Handler: Update Verification Status
   const handleUpdateStatus = async (id: string, status: VerificationStatus) => {
-    await updateTransactionStatus(id, status);
-    setTransactions(prev =>
-      prev.map(t => (t.id === id ? { ...t, verification_status: status } : t))
-    );
-    if (selectedProofTx && selectedProofTx.id === id) {
-      setSelectedProofTx(prev => (prev ? { ...prev, verification_status: status } : null));
+    try {
+      await updateTransactionStatus(id, status);
+      setTransactions(prev =>
+        prev.map(t => (t.id === id ? { ...t, verification_status: status } : t))
+      );
+      if (selectedProofTx && selectedProofTx.id === id) {
+        setSelectedProofTx(prev => (prev ? { ...prev, verification_status: status } : null));
+      }
+    } catch (err: any) {
+      alert(`Gagal memperbarui status: ${err.message || 'Terjadi kesalahan'}`);
     }
   };
 
