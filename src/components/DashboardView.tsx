@@ -5,6 +5,8 @@ import {
   TrendingDown,
   FileCheck2,
   ArrowRight,
+  BarChart3,
+  PieChart as PieIcon,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -16,6 +18,7 @@ import {
   PieChart,
   Pie,
   Cell,
+  CartesianGrid,
 } from 'recharts';
 import type { Transaction, ActiveTab } from '../types';
 import { formatRupiah, formatDateIndo } from '../lib/utils';
@@ -266,111 +269,219 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Bar Chart: Cash Inflow vs Outflow */}
-      <div className="bg-white dark:bg-slate-850/60 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-soft transition-colors">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h3 className="text-xs font-semibold text-slate-800 dark:text-slate-200">Arus Masuk vs Keluar</h3>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400">Perbandingan per tanggal transaksi</p>
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800/90 shadow-sm transition-colors">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center shrink-0">
+              <BarChart3 className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white">Arus Masuk vs Keluar</h3>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400">Perbandingan per tanggal transaksi</p>
+            </div>
           </div>
-          <div className="flex items-center gap-3 text-[10px]">
-            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" /> Masuk
-            </span>
-            <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400 font-medium">
-              <span className="w-2 h-2 rounded-full bg-rose-500" /> Keluar
-            </span>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Masuk</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-[10px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+              <span>Keluar</span>
+            </div>
           </div>
         </div>
 
         {barChartData.length > 0 ? (
-          <div className="h-44 w-full">
+          <div className="h-48 w-full pt-1">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={barChartData} margin={{ top: 10, right: 0, left: -25, bottom: 0 }}>
-                <XAxis dataKey="displayDate" stroke="#94a3b8" fontSize={10} tickLine={false} />
-                <YAxis
-                  stroke="#94a3b8"
-                  fontSize={10}
-                  tickFormatter={val => `${val >= 1000000 ? (val / 1000000).toFixed(1) + 'M' : (val / 1000).toFixed(0) + 'k'}`}
+              <BarChart data={barChartData} margin={{ top: 12, right: 4, left: -24, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="barMasukGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#059669" stopOpacity={0.85} />
+                  </linearGradient>
+                  <linearGradient id="barKeluarGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#f43f5e" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#e11d48" stopOpacity={0.85} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-slate-100 dark:text-slate-800/80" />
+                <XAxis
+                  dataKey="displayDate"
+                  axisLine={false}
                   tickLine={false}
+                  tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }}
+                  dy={6}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }}
+                  dx={-2}
+                  tickFormatter={val => (val >= 1000000 ? `${(val / 1000000).toFixed(1)}M` : `${Math.round(val / 1000)}k`)}
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#0f172a',
-                    borderColor: '#334155',
-                    borderRadius: '0.5rem',
-                    fontSize: '11px',
-                    color: '#f8fafc',
+                  cursor={{ fill: 'rgba(148, 163, 184, 0.08)', radius: 8 }}
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload || !payload.length) return null;
+                    const masukVal = Number(payload.find(p => p.dataKey === 'masuk')?.value || 0);
+                    const keluarVal = Number(payload.find(p => p.dataKey === 'keluar')?.value || 0);
+                    const net = masukVal - keluarVal;
+                    return (
+                      <div className="bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md border border-slate-700/80 text-white rounded-2xl p-3 shadow-2xl text-[11px] min-w-[170px] space-y-1.5 animate-scale-in">
+                        <div className="font-bold text-slate-300 pb-1.5 border-b border-slate-800 flex items-center justify-between">
+                          <span>Tgl: {label}</span>
+                          <span className={`text-[10px] font-extrabold ${net >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                            {net >= 0 ? '+' : ''}{formatRupiah(net)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-emerald-400 font-medium">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400" /> Masuk
+                          </span>
+                          <span className="font-bold">{formatRupiah(masukVal)}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-rose-400 font-medium">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-rose-400" /> Keluar
+                          </span>
+                          <span className="font-bold">{formatRupiah(keluarVal)}</span>
+                        </div>
+                      </div>
+                    );
                   }}
-                  formatter={(val: any) => [formatRupiah(Number(val)), '']}
-                  labelFormatter={(label) => `Tanggal: ${label}`}
                 />
-                <Bar dataKey="masuk" fill="#10b981" radius={[4, 4, 0, 0]} name="Dana Masuk" />
-                <Bar dataKey="keluar" fill="#f43f5e" radius={[4, 4, 0, 0]} name="Total Keluar" />
+                <Bar dataKey="masuk" fill="url(#barMasukGrad)" radius={[6, 6, 2, 2]} barSize={12} maxBarSize={16} name="Dana Masuk" />
+                <Bar dataKey="keluar" fill="url(#barKeluarGrad)" radius={[6, 6, 2, 2]} barSize={12} maxBarSize={16} name="Total Keluar" />
               </BarChart>
             </ResponsiveContainer>
           </div>
         ) : (
-          <div className="h-32 flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs">
-            Belum ada data pada periode ini
+          <div className="h-36 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 text-xs gap-1">
+            <BarChart3 className="w-6 h-6 stroke-[1.5] text-slate-300 dark:text-slate-600" />
+            <span>Belum ada data transaksi di periode ini</span>
           </div>
         )}
       </div>
 
       {/* Donut Chart: Expense by Category */}
-      <div className="bg-white dark:bg-slate-850/60 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-soft transition-colors">
-        <div className="mb-2">
-          <h3 className="text-xs font-semibold text-slate-800 dark:text-slate-200">Distribusi Kategori Pengeluaran</h3>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400">Persentase pengeluaran berdasarkan pos dana</p>
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800/90 shadow-sm transition-colors">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 flex items-center justify-center shrink-0">
+              <PieIcon className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white">Distribusi Kategori Pengeluaran</h3>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400">Persentase pengeluaran berdasarkan pos dana</p>
+            </div>
+          </div>
+          {summary.expense > 0 && (
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+              {donutData.length} Kategori
+            </span>
+          )}
         </div>
 
         {donutData.length > 0 ? (
-          <div className="flex flex-col sm:flex-row items-center gap-2">
-            <div className="h-44 w-full sm:w-1/2">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={donutData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={45}
-                    outerRadius={68}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    {donutData.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={DONUT_COLORS[index % DONUT_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#0f172a',
-                      borderColor: '#334155',
-                      borderRadius: '0.5rem',
-                      fontSize: '11px',
-                      color: '#f8fafc',
-                    }}
-                    formatter={(val: any) => [formatRupiah(Number(val)), 'Nominal']}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+          <div className="space-y-4">
+            {/* Donut Chart with Center Metric */}
+            <div className="relative w-full flex items-center justify-center pt-2">
+              <div className="h-48 w-48 relative flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={donutData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={52}
+                      outerRadius={74}
+                      paddingAngle={3}
+                      cornerRadius={4}
+                      dataKey="value"
+                    >
+                      {donutData.map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={DONUT_COLORS[index % DONUT_COLORS.length]}
+                          stroke="transparent"
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (!active || !payload || !payload.length) return null;
+                        const data = payload[0];
+                        const pct = summary.expense > 0 ? Math.round((Number(data.value) / summary.expense) * 100) : 0;
+                        return (
+                          <div className="bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md border border-slate-700/80 text-white rounded-xl px-3 py-2 shadow-2xl text-xs flex items-center gap-2 animate-scale-in">
+                            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: data.payload.fill }} />
+                            <span className="font-semibold text-slate-200">{data.name}:</span>
+                            <span className="font-bold text-emerald-400">{formatRupiah(Number(data.value))}</span>
+                            <span className="text-[10px] text-slate-400 font-mono">({pct}%)</span>
+                          </div>
+                        );
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+
+                {/* Center Total Display */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">
+                    Total Keluar
+                  </span>
+                  <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white tracking-tight px-2 text-center">
+                    {formatRupiah(summary.expense)}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Compact Legend */}
-            <div className="w-full sm:w-1/2 grid grid-cols-2 gap-2 text-[11px]">
-              {donutData.slice(0, 6).map((item, idx) => (
-                <div key={item.name} className="flex items-center gap-1.5 truncate">
-                  <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{ backgroundColor: DONUT_COLORS[idx % DONUT_COLORS.length] }}
-                  />
-                  <span className="text-slate-700 dark:text-slate-300 truncate">{item.name}</span>
-                </div>
-              ))}
+            {/* Modern Breakdown Category List */}
+            <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+              {donutData.slice(0, 5).map((item, idx) => {
+                const pct = summary.expense > 0 ? Math.round((item.value / summary.expense) * 100) : 0;
+                const color = DONUT_COLORS[idx % DONUT_COLORS.length];
+                return (
+                  <div
+                    key={item.name}
+                    className="p-2.5 rounded-2xl bg-slate-50/80 dark:bg-slate-850/60 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3 text-xs transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                      <span
+                        className="w-3 h-3 rounded-full shrink-0 shadow-sm"
+                        style={{ backgroundColor: color }}
+                      />
+                      <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                        {item.name}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2.5 shrink-0">
+                      <div className="w-14 bg-slate-200/80 dark:bg-slate-700/80 rounded-full h-1.5 overflow-hidden hidden xs:block">
+                        <div
+                          className="h-full rounded-full"
+                          style={{ width: `${pct}%`, backgroundColor: color }}
+                        />
+                      </div>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200/80 dark:border-slate-700 font-mono">
+                        {pct}%
+                      </span>
+                      <span className="font-bold text-slate-900 dark:text-slate-100 text-[11px] min-w-[70px] text-right">
+                        {formatRupiah(item.value)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ) : (
-          <div className="h-32 flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs">
-            Tidak ada pengeluaran pada periode ini
+          <div className="h-36 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 text-xs gap-1">
+            <PieIcon className="w-6 h-6 stroke-[1.5] text-slate-300 dark:text-slate-600" />
+            <span>Tidak ada pengeluaran pada periode ini</span>
           </div>
         )}
       </div>
