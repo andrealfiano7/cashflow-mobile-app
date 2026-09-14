@@ -1,0 +1,16 @@
+{
+  "name": "Cashflow Mobile App",
+  "short_name": "Cashflow",
+  "description": "Aplikasi Pengelola Arus Kas & Database Bukti Transfer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
