@@ -32,14 +32,14 @@ interface DashboardViewProps {
 }
 
 const DONUT_COLORS = [
-  '#f43f5e', // rose
-  '#f59e0b', // amber
-  '#3b82f6', // blue
-  '#8b5cf6', // purple
-  '#10b981', // emerald
-  '#06b6d4', // cyan
-  '#ec4899', // pink
-  '#64748b', // slate
+  '#C73618',
+  '#F16744',
+  '#F6A278',
+  '#004A59',
+  '#027184',
+  '#0193A5',
+  '#9e2d16',
+  '#025a6b',
 ];
 
 interface SummaryData {
@@ -299,12 +299,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <BarChart data={barChartData} margin={{ top: 12, right: 4, left: -24, bottom: 0 }}>
                 <defs>
                   <linearGradient id="barMasukGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#059669" stopOpacity={0.85} />
+                    <stop offset="0%" stopColor="#0193A5" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#027184" stopOpacity={0.85} />
                   </linearGradient>
                   <linearGradient id="barKeluarGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#f43f5e" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#e11d48" stopOpacity={0.85} />
+                    <stop offset="0%" stopColor="#F16744" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#C73618" stopOpacity={0.85} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-slate-100 dark:text-slate-800/80" />
