@@ -1,5 +1,5 @@
 import React from 'react';
-import { WalletCards, CheckCircle2, Info, Moon, Sun } from 'lucide-react';
+import { CheckCircle2, Info, Moon, Sun } from 'lucide-react';
 import { isSupabaseConfigured } from '../lib/supabase';
 import type { Theme } from '../lib/theme';
 
@@ -15,9 +15,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenConfig, theme, onToggleThe
       <div className="max-w-md mx-auto flex items-center justify-between">
         {/* App Branding */}
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center shadow-md shadow-brand-500/20 text-white font-bold">
-            <WalletCards className="w-5 h-5" />
-          </div>
+          <img src="/logo.png" alt="Cashflow Logo" className="w-10 h-10 object-contain drop-shadow-sm" />
           <div>
             <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
               Cashflow
