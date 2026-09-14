@@ -16,9 +16,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   pendingProofsCount,
 }) => {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 px-3 pb-3 pt-1 pointer-events-none">
-      <div className="max-w-md mx-auto pointer-events-auto">
-        <nav className="relative bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl border border-slate-200/80 dark:border-slate-800/80 rounded-3xl shadow-[0_12px_36px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.55)] px-2 py-1.5 flex items-center justify-around transition-all">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-t border-slate-200/80 dark:border-slate-800/80 shadow-[0_-8px_25px_rgba(0,0,0,0.05)] dark:shadow-[0_-8px_25px_rgba(0,0,0,0.35)] pb-safe transition-colors">
+      <div className="max-w-md mx-auto px-2 py-1.5 flex items-center justify-around relative">
           {/* Tab 1: Dashboard */}
           <button
             onClick={() => onChangeTab('dashboard')}
@@ -125,8 +124,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               <span className="w-1 h-1 rounded-full bg-emerald-500 dark:bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.9)] mt-0.5" />
             )}
           </button>
-        </nav>
       </div>
-    </div>
+    </nav>
   );
 };
