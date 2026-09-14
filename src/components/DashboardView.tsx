@@ -60,23 +60,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onSelectProof,
   onChangeTab,
 }) => {
-  const [filterPeriod, setFilterPeriod] = useState<'all' | 'month' | 'week'>('all');
+  const [selectedMonth, setSelectedMonth] = useState<string>('all');
 
-  // Filter transactions based on selected period
+  const availableMonths = useMemo(() => {
+    const months = new Set<string>();
+    transactions.forEach(tx => {
+      const d = new Date(tx.date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      months.add(`${year}-${month}`);
+    });
+    return Array.from(months).sort((a, b) => b.localeCompare(a));
+  }, [transactions]);
+
+  // Format YYYY-MM to Indonesian e.g. "September 2026"
+  const formatMonth = (yyyyMm: string) => {
+    const [y, m] = yyyyMm.split('-');
+    const date = new Date(Number(y), Number(m) - 1, 1);
+    return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  };
+
+  // Filter transactions based on selected month
   const filteredTransactions = useMemo(() => {
-    const now = new Date();
-    if (filterPeriod === 'week') {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(now.getDate() - 7);
-      return transactions.filter(t => new Date(t.date) >= oneWeekAgo);
-    }
-    if (filterPeriod === 'month') {
-      const oneMonthAgo = new Date();
-      oneMonthAgo.setMonth(now.getMonth() - 1);
-      return transactions.filter(t => new Date(t.date) >= oneMonthAgo);
-    }
-    return transactions;
-  }, [transactions, filterPeriod]);
+    if (selectedMonth === 'all') return transactions;
+    return transactions.filter(t => {
+      const d = new Date(t.date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      return `${year}-${month}` === selectedMonth;
+    });
+  }, [transactions, selectedMonth]);
 
   // Financial summary
   const summary = useMemo<SummaryData>(() => {
@@ -96,16 +109,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
     let topCategory: { name: string; amount: number; percentage: number } | null = null;
     let maxExpense = 0;
-    Object.entries(expenseByCat).forEach(([name, amt]) => {
+    for (const [name, amt] of Object.entries(expenseByCat)) {
       if (amt > maxExpense) {
         maxExpense = amt;
-        topCategory = {
-          name,
-          amount: amt,
-          percentage: expense > 0 ? Math.round((amt / expense) * 100) : 0,
-        };
+        topCategory = { name, amount: amt, percentage: 0 };
       }
-    });
+    }
+
+    if (topCategory && expense > 0) {
+      topCategory.percentage = Math.round((topCategory.amount / expense) * 100);
+    }
 
     return {
       income,
@@ -116,33 +129,42 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     };
   }, [filteredTransactions]);
 
-  // Bar chart data (Grouped by date)
+  // Bar chart data (Grouped by month if 'all', else by date)
   const barChartData = useMemo(() => {
-    const mapByDate: Record<string, { date: string; displayDate: string; masuk: number; keluar: number }> = {};
-
-    // Sort chronologically
+    const mapData: Record<string, { date: string; displayDate: string; masuk: number; keluar: number }> = {};
     const sorted = [...filteredTransactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     sorted.forEach(tx => {
-      const dateKey = tx.date;
-      if (!mapByDate[dateKey]) {
-        const d = new Date(dateKey);
-        mapByDate[dateKey] = {
-          date: dateKey,
-          displayDate: `${d.getDate()}/${d.getMonth() + 1}`,
-          masuk: 0,
-          keluar: 0,
-        };
-      }
-      if (tx.type === 'income') {
-        mapByDate[dateKey].masuk += Number(tx.amount);
+      const d = new Date(tx.date);
+      let key = '';
+      let display = '';
+
+      if (selectedMonth === 'all') {
+        // Group by Month
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        key = `${year}-${month}`;
+        display = d.toLocaleDateString('id-ID', { month: 'short', year: '2-digit' });
       } else {
-        mapByDate[dateKey].keluar += Number(tx.amount);
+        // Group by Day
+        key = tx.date;
+        display = `${d.getDate()}/${d.getMonth() + 1}`;
+      }
+
+      if (!mapData[key]) {
+        mapData[key] = { date: key, displayDate: display, masuk: 0, keluar: 0 };
+      }
+
+      if (tx.type === 'income') {
+        mapData[key].masuk += Number(tx.amount);
+      } else {
+        mapData[key].keluar += Number(tx.amount);
       }
     });
 
-    return Object.values(mapByDate).slice(-7);
-  }, [filteredTransactions]);
+    const values = Object.values(mapData);
+    return selectedMonth === 'all' ? values : values; 
+  }, [filteredTransactions, selectedMonth]);
 
   // Donut chart data (Expenses by category)
   const donutData = useMemo(() => {
@@ -234,38 +256,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Filter Tabs */}
       <div className="flex items-center justify-between gap-2 px-1">
         <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">Arus Kas & Distribusi</h2>
-        <div className="flex bg-slate-200/80 dark:bg-slate-800/80 p-0.5 rounded-xl border border-slate-300/80 dark:border-slate-700/60 text-xs">
-          <button
-            onClick={() => setFilterPeriod('week')}
-            className={`px-2 py-1 rounded-lg text-[11px] transition-all ${
-              filterPeriod === 'week'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm'
-                : 'text-slate-600 dark:text-slate-400'
-            }`}
-          >
-            7 Hari
-          </button>
-          <button
-            onClick={() => setFilterPeriod('month')}
-            className={`px-2 py-1 rounded-lg text-[11px] transition-all ${
-              filterPeriod === 'month'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm'
-                : 'text-slate-600 dark:text-slate-400'
-            }`}
-          >
-            30 Hari
-          </button>
-          <button
-            onClick={() => setFilterPeriod('all')}
-            className={`px-2 py-1 rounded-lg text-[11px] transition-all ${
-              filterPeriod === 'all'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm'
-                : 'text-slate-600 dark:text-slate-400'
-            }`}
-          >
-            Semua
-          </button>
-        </div>
+        <select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/50 appearance-none font-medium"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200.0/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' class='w-4 h-4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1em', paddingRight: '2rem' }}
+        >
+          <option value="all">Semua Waktu</option>
+          {availableMonths.map(m => (
+            <option key={m} value={m}>{formatMonth(m)}</option>
+          ))}
+        </select>
       </div>
 
       {/* Bar Chart: Cash Inflow vs Outflow */}

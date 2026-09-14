@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { TrendingUp, TrendingDown, Sparkles } from 'lucide-react';
 import type { Transaction } from '../types';
 import { formatRupiah } from '../lib/utils';
@@ -9,12 +9,41 @@ interface ReportsViewProps {
 }
 
 export const ReportsView: React.FC<ReportsViewProps> = ({ transactions }) => {
+  const [selectedMonth, setSelectedMonth] = useState<string>('all');
+
+  const availableMonths = useMemo(() => {
+    const months = new Set<string>();
+    transactions.forEach(tx => {
+      const d = new Date(tx.date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      months.add(`${year}-${month}`);
+    });
+    return Array.from(months).sort((a, b) => b.localeCompare(a));
+  }, [transactions]);
+
+  const formatMonth = (yyyyMm: string) => {
+    const [y, m] = yyyyMm.split('-');
+    const date = new Date(Number(y), Number(m) - 1, 1);
+    return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  };
+
+  const filteredTransactions = useMemo(() => {
+    if (selectedMonth === 'all') return transactions;
+    return transactions.filter(t => {
+      const d = new Date(t.date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      return `${year}-${month}` === selectedMonth;
+    });
+  }, [transactions, selectedMonth]);
+
   const analysis = useMemo(() => {
     let totalIncome = 0;
     let totalExpense = 0;
     const categoryTotals: Record<string, { type: 'income' | 'expense'; amount: number }> = {};
 
-    transactions.forEach(tx => {
+    filteredTransactions.forEach(tx => {
       const amt = Number(tx.amount);
       if (tx.type === 'income') {
         totalIncome += amt;
@@ -57,14 +86,27 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ transactions }) => {
       expenseCategories,
       incomeCategories,
     };
-  }, [transactions]);
+  }, [filteredTransactions]);
 
   return (
     <div className="space-y-4 pb-24">
       {/* Header */}
-      <div>
-        <h2 className="text-base font-bold text-slate-900 dark:text-white">Analisis Finansial</h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400">Rasio tabungan dan rincian alokasi dana</p>
+      <div className="flex items-center justify-between px-1">
+        <div>
+          <h2 className="text-base font-bold text-slate-900 dark:text-white">Analisis Finansial</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Rasio tabungan dan rincian alokasi dana</p>
+        </div>
+        <select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px] rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/50 appearance-none font-semibold"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200.0/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' class='w-3 h-3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")`, backgroundPosition: 'right 0.35rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1em', paddingRight: '1.5rem' }}
+        >
+          <option value="all">Semua Waktu</option>
+          {availableMonths.map(m => (
+            <option key={m} value={m}>{formatMonth(m)}</option>
+          ))}
+        </select>
       </div>
 
       {/* Financial Health Summary */}
