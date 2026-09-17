@@ -10,11 +10,13 @@ import { ProofLightboxModal } from './components/ProofLightboxModal';
 import { SupabaseConfigModal } from './components/SupabaseConfigModal';
 import { LoginView } from './components/LoginView';
 import { UserProfileModal } from './components/UserProfileModal';
+import { UpgradeModal, type UpgradeReason } from './components/UpgradeModal';
 import { useTheme } from './lib/theme';
 import {
   checkCurrentUser,
   logoutUser,
   canPerformAction,
+  hasReachedTransactionLimit,
 } from './lib/auth';
 import {
   fetchTransactions,
@@ -42,6 +44,8 @@ export function App() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedProofTx, setSelectedProofTx] = useState<Transaction | null>(null);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState<UpgradeReason | string>('transaction_limit');
 
   // Initial Auth Check
   useEffect(() => {
@@ -81,11 +85,66 @@ export function App() {
     return transactions.filter(t => t.proof_url && t.verification_status === 'pending').length;
   }, [transactions]);
 
+  // Quota calculation for basic vs pro
+  const isQuotaFull = useMemo(() => {
+    return hasReachedTransactionLimit(currentUser, transactions);
+  }, [currentUser, transactions]);
+
+  const openUpgradeModal = (reason: UpgradeReason | string = 'transaction_limit') => {
+    setUpgradeReason(reason);
+    setIsUpgradeModalOpen(true);
+  };
+
+  const handleRequestAddModal = () => {
+    if (isQuotaFull) {
+      openUpgradeModal('transaction_limit');
+      return;
+    }
+    setIsAddModalOpen(true);
+  };
+
+  const handleUpgradeToPro = async () => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email: 'pro@cashflow.com', password: 'pro123' }),
+      });
+      let data: any = null;
+      try {
+        const text = await res.text();
+        data = text ? JSON.parse(text) : null;
+      } catch (e) {}
+      if (data?.user) {
+        setCurrentUser(data.user);
+        localStorage.setItem('cashflow_active_user', JSON.stringify(data.user));
+        return;
+      }
+    } catch (err) {
+      console.warn('API login for upgrade error, falling back locally', err);
+    }
+
+    const proUser: User = {
+      id: 'usr-pro-1',
+      email: 'pro@cashflow.com',
+      name: 'Ahmad Pratama',
+      role: 'pro',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    };
+    setCurrentUser(proUser);
+    localStorage.setItem('cashflow_active_user', JSON.stringify(proUser));
+  };
+
   // Handler: Add Transaction
   const handleAddTransaction = async (
     data: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>,
     file?: File | null
   ) => {
+    if (isQuotaFull) {
+      openUpgradeModal('transaction_limit');
+      return;
+    }
     try {
       const txWithUser = {
         ...data,
@@ -202,7 +261,7 @@ export function App() {
               {activeTab === 'dashboard' && (
                 <DashboardView
                   transactions={transactions}
-                  onOpenAddModal={() => setIsAddModalOpen(true)}
+                  onOpenAddModal={handleRequestAddModal}
                   onSelectProof={tx => setSelectedProofTx(tx)}
                   onChangeTab={tab => setActiveTab(tab)}
                 />
@@ -211,11 +270,12 @@ export function App() {
               {activeTab === 'transactions' && (
                 <TransactionListView
                   transactions={transactions}
-                  onOpenAddModal={() => setIsAddModalOpen(true)}
+                  onOpenAddModal={handleRequestAddModal}
                   onSelectProof={tx => setSelectedProofTx(tx)}
                   onDeleteTransaction={handleDeleteTransaction}
                   onUploadProof={handleUploadProof}
                   currentUser={currentUser}
+                  onOpenUpgrade={openUpgradeModal}
                 />
               )}
 
@@ -228,7 +288,13 @@ export function App() {
                 />
               )}
 
-              {activeTab === 'reports' && <ReportsView transactions={transactions} />}
+              {activeTab === 'reports' && (
+                <ReportsView
+                  transactions={transactions}
+                  currentUser={currentUser}
+                  onOpenUpgrade={openUpgradeModal}
+                />
+              )}
             </>
           )}
         </main>
@@ -237,7 +303,7 @@ export function App() {
         <BottomNav
           activeTab={activeTab}
           onChangeTab={tab => setActiveTab(tab)}
-          onOpenAddModal={() => setIsAddModalOpen(true)}
+          onOpenAddModal={handleRequestAddModal}
           pendingProofsCount={pendingProofsCount}
           canAddTransaction={canPerformAction(currentUser, 'add_transaction')}
         />
@@ -248,6 +314,9 @@ export function App() {
           onClose={() => setIsAddModalOpen(false)}
           categories={categories}
           onSubmit={handleAddTransaction}
+          currentUser={currentUser}
+          onOpenUpgrade={openUpgradeModal}
+          isQuotaFull={isQuotaFull}
         />
 
         <ProofLightboxModal
@@ -270,6 +339,14 @@ export function App() {
           currentUser={currentUser}
           onLogout={handleLogout}
           onSwitchUser={handleSwitchUser}
+        />
+
+        {/* SaaS Tier Upgrade Modal */}
+        <UpgradeModal
+          isOpen={isUpgradeModalOpen}
+          onClose={() => setIsUpgradeModalOpen(false)}
+          reason={upgradeReason}
+          onUpgrade={handleUpgradeToPro}
         />
       </div>
     </div>

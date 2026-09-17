@@ -21,16 +21,20 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
     badgeBg: 'bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-rose-500/15',
     badgeText: 'text-amber-600 dark:text-amber-400',
     badgeBorder: 'border-amber-500/30',
-    description: 'Akses Penuh Tanpa Batas: Export CSV, Laporan Rasio Keuangan, & Arsip Bukti HD',
+    description: 'Paket Pro: Kuota tanpa batas, upload bukti transfer HD (10MB), analisa rasio tabungan, & export CSV',
   },
   basic: {
     label: 'Basic',
     badgeBg: 'bg-slate-500/10 dark:bg-slate-500/20',
     badgeText: 'text-slate-600 dark:text-slate-400',
     badgeBorder: 'border-slate-500/30',
-    description: 'Paket Standar: Pencatatan arus kas, kontrol saldo, & verifikasi bukti bayar',
+    description: 'Paket Standar: Kuota 15 transaksi, pencatatan arus kas, & bukti bayar standar (maks 2MB)',
   },
 };
+
+export const BASIC_TRANSACTION_LIMIT = 15;
+export const BASIC_MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB
+export const PRO_MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 
 export const DEMO_ACCOUNTS = [
   { email: 'pro@cashflow.com', password: 'pro123', role: 'pro' as UserRole, name: 'Ahmad Pratama' },
@@ -108,3 +112,26 @@ export function canPerformAction(user: User | null, action: AuthAction, _targetT
       return true;
   }
 }
+
+export function getUserTransactionCount(user: User | null, transactions: Transaction[]): number {
+  if (!user) return 0;
+  return transactions.filter(t => t.user_id === user.id).length;
+}
+
+export function hasReachedTransactionLimit(user: User | null, transactions: Transaction[]): boolean {
+  if (!user || user.role === 'pro') return false;
+  return getUserTransactionCount(user, transactions) >= BASIC_TRANSACTION_LIMIT;
+}
+
+export function canExportCSV(user: User | null): boolean {
+  return user?.role === 'pro';
+}
+
+export function canUploadHDProof(user: User | null): boolean {
+  return user?.role === 'pro';
+}
+
+export function canViewSavingsRatio(user: User | null): boolean {
+  return user?.role === 'pro';
+}
+
