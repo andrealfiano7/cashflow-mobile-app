@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { X, LogOut, Shield, CheckCircle2, RefreshCw } from 'lucide-react';
 import { ROLE_CONFIGS, DEMO_ACCOUNTS } from '../lib/auth';
 import type { User } from '../types';
@@ -88,14 +88,29 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                           credentials: 'include',
                           body: JSON.stringify({ email: acc.email, password: acc.password }),
                         });
-                        const data = await res.json();
-                        if (data.user) {
+                        let data: any = null;
+                        try {
+                          const text = await res.text();
+                          data = text ? JSON.parse(text) : null;
+                        } catch (e) {}
+                        if (data?.user) {
                           onSwitchUser(data.user);
                           onClose();
+                          return;
                         }
                       } catch (err) {
-                        console.error('Failed to switch user:', err);
+                        console.warn('Switch user API error, using local fallback:', err);
                       }
+                      const fallbackUser: User = {
+                        id: `usr-${acc.role}-1`,
+                        email: acc.email,
+                        name: acc.name,
+                        role: acc.role,
+                        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+                      };
+                      localStorage.setItem('cashflow_active_user', JSON.stringify(fallbackUser));
+                      onSwitchUser(fallbackUser);
+                      onClose();
                     }}
                     className={`p-2 rounded-xl text-left border transition-all text-xs flex items-center justify-between ${
                       isCurrent

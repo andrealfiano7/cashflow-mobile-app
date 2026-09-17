@@ -1,4 +1,4 @@
-﻿import { extractTokenFromCookies, verifyToken, getUserById } from '../../src/server/authHandler';
+import { extractTokenFromCookies, verifyToken, getUserById } from './_auth.ts';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'GET') {

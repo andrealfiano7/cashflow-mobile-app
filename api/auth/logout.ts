@@ -1,4 +1,4 @@
-﻿import { clearAuthCookie } from '../../src/server/authHandler';
+import { clearAuthCookie } from './_auth.ts';
 
 export default async function handler(req: any, res: any) {
   res.setHeader('Set-Cookie', clearAuthCookie());

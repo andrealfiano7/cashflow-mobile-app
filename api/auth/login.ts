@@ -1,4 +1,4 @@
-﻿import { authenticateUser, signToken, createAuthCookie } from '../../src/server/authHandler';
+import { authenticateUser, signToken, createAuthCookie } from './_auth.ts';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {

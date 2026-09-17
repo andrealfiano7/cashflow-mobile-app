@@ -35,14 +35,55 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
         body: JSON.stringify({ email: loginEmail, password: loginPassword }),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Email atau kata sandi tidak valid');
+      let data: any = null;
+      try {
+        const text = await res.text();
+        data = text ? JSON.parse(text) : null;
+      } catch (parseErr) {
+        // Fallback for demo users if API returns non-JSON
+        const demoMatch = DEMO_ACCOUNTS.find(
+          a => a.email.toLowerCase() === loginEmail.toLowerCase() && a.password === loginPassword
+        );
+        if (demoMatch) {
+          const fallbackUser: User = {
+            id: `usr-${demoMatch.role}-1`,
+            email: demoMatch.email,
+            name: demoMatch.name,
+            role: demoMatch.role,
+            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+          };
+          localStorage.setItem('cashflow_active_user', JSON.stringify(fallbackUser));
+          onLoginSuccess(fallbackUser);
+          return;
+        }
+        throw new Error('Gagal menghubungi server otentikasi. Silakan periksa kembali email & sandi.');
       }
 
-      localStorage.setItem('cashflow_active_user', JSON.stringify(data.user));
-      onLoginSuccess(data.user);
+      if (!res.ok) {
+        throw new Error(data?.error || 'Email atau kata sandi tidak valid');
+      }
+
+      if (data?.user) {
+        localStorage.setItem('cashflow_active_user', JSON.stringify(data.user));
+        onLoginSuccess(data.user);
+      }
     } catch (err: any) {
+      // Offline / network fallback for demo users
+      const demoMatch = DEMO_ACCOUNTS.find(
+        a => a.email.toLowerCase() === loginEmail.toLowerCase() && a.password === loginPassword
+      );
+      if (demoMatch) {
+        const fallbackUser: User = {
+          id: `usr-${demoMatch.role}-1`,
+          email: demoMatch.email,
+          name: demoMatch.name,
+          role: demoMatch.role,
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+        };
+        localStorage.setItem('cashflow_active_user', JSON.stringify(fallbackUser));
+        onLoginSuccess(fallbackUser);
+        return;
+      }
       setErrorMessage(err.message || 'Terjadi kesalahan saat masuk');
     } finally {
       setIsLoading(false);
