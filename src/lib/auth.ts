@@ -16,41 +16,25 @@ export interface RoleConfig {
 }
 
 export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
-  admin: {
-    label: 'Admin',
-    badgeBg: 'bg-rose-500/10 dark:bg-rose-500/20',
-    badgeText: 'text-rose-600 dark:text-rose-400',
-    badgeBorder: 'border-rose-500/30',
-    description: 'Akses penuh: Tambah, hapus semua transaksi, dan verifikasi bukti bayar',
+  pro: {
+    label: '💎 Pro',
+    badgeBg: 'bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-rose-500/15',
+    badgeText: 'text-amber-600 dark:text-amber-400',
+    badgeBorder: 'border-amber-500/30',
+    description: 'Akses Penuh Tanpa Batas: Export CSV, Laporan Rasio Keuangan, & Arsip Bukti HD',
   },
-  finance: {
-    label: 'Finance',
-    badgeBg: 'bg-brand-500/10 dark:bg-brand-500/20',
-    badgeText: 'text-brand-600 dark:text-brand-400',
-    badgeBorder: 'border-brand-500/30',
-    description: 'Pengelola kas: Catat transaksi, analisa laporan, dan verifikasi bukti bayar',
-  },
-  member: {
-    label: 'Staff',
-    badgeBg: 'bg-blue-500/10 dark:bg-blue-500/20',
-    badgeText: 'text-blue-600 dark:text-blue-400',
-    badgeBorder: 'border-blue-500/30',
-    description: 'Pencatat mutasi: Dapat menambah transaksi & bukti bayar milik sendiri',
-  },
-  viewer: {
-    label: 'Auditor',
+  basic: {
+    label: 'Basic',
     badgeBg: 'bg-slate-500/10 dark:bg-slate-500/20',
     badgeText: 'text-slate-600 dark:text-slate-400',
     badgeBorder: 'border-slate-500/30',
-    description: 'Hanya baca: Dapat memantau laporan dan transaksi tanpa hak ubah',
+    description: 'Paket Standar: Pencatatan arus kas, kontrol saldo, & verifikasi bukti bayar',
   },
 };
 
 export const DEMO_ACCOUNTS = [
-  { email: 'admin@cashflow.com', password: 'admin123', role: 'admin' as UserRole, name: 'Ahmad Pratama' },
-  { email: 'finance@cashflow.com', password: 'finance123', role: 'finance' as UserRole, name: 'Siti Rahma' },
-  { email: 'budi@cashflow.com', password: 'user123', role: 'member' as UserRole, name: 'Budi Santoso' },
-  { email: 'viewer@cashflow.com', password: 'viewer123', role: 'viewer' as UserRole, name: 'Rina Melati' },
+  { email: 'pro@cashflow.com', password: 'pro123', role: 'pro' as UserRole, name: 'Ahmad Pratama' },
+  { email: 'basic@cashflow.com', password: 'basic123', role: 'basic' as UserRole, name: 'Budi Santoso' },
 ];
 
 export async function loginUser(email: string, password: string): Promise<User> {
@@ -109,34 +93,18 @@ export async function checkCurrentUser(): Promise<User | null> {
   return null;
 }
 
-export function canPerformAction(user: User | null, action: AuthAction, targetTx?: Transaction): boolean {
+export function canPerformAction(user: User | null, action: AuthAction, _targetTx?: Transaction): boolean {
   if (!user) return false;
 
   switch (action) {
     case 'add_transaction':
-      // Admin, Finance, Member can add; Viewer cannot
-      return user.role !== 'viewer';
-
     case 'delete_transaction':
-      // Admin can delete any transaction
-      if (user.role === 'admin') return true;
-      // Member can only delete if it is their own transaction
-      if (user.role === 'member' && targetTx?.user_id === user.id) return true;
-      // Finance can delete own transactions
-      if (user.role === 'finance' && (!targetTx?.user_id || targetTx.user_id === user.id)) return true;
-      return false;
-
     case 'verify_proof':
-      // Only Admin and Finance can approve / reject proofs
-      return user.role === 'admin' || user.role === 'finance';
-
     case 'view_reports':
+    case 'manage_users':
       return true;
 
-    case 'manage_users':
-      return user.role === 'admin';
-
     default:
-      return false;
+      return true;
   }
 }

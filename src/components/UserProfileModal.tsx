@@ -60,17 +60,17 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </div>
           </div>
 
-          {/* Role Description Card */}
+          {/* Plan Description Card */}
           <div className="p-3 rounded-xl bg-brand-500/5 border border-brand-500/15 text-[11px] text-slate-600 dark:text-slate-300">
-            <p className="font-semibold text-slate-800 dark:text-slate-200 mb-0.5">Wewenang Role:</p>
+            <p className="font-semibold text-slate-800 dark:text-slate-200 mb-0.5">Paket Layanan:</p>
             <p>{currentRoleCfg.description}</p>
           </div>
 
-          {/* Switch Account (Multi-user & RBAC Testing) */}
+          {/* Switch Account (Demo Multi-user) */}
           <div className="pt-2">
             <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-1.5">
               <RefreshCw className="w-3.5 h-3.5 text-brand-500" />
-              Beralih Akun (Uji RBAC):
+              Beralih Akun (Pro &amp; Basic):
             </p>
             <div className="grid grid-cols-2 gap-2">
               {DEMO_ACCOUNTS.map(acc => {

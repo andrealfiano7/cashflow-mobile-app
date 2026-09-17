@@ -9,43 +9,24 @@ export interface UserAccount extends User {
 export const JWT_SECRET = process.env.JWT_SECRET || 'cashflow-jwt-super-secret-key-2026-auth-token';
 export const COOKIE_NAME = 'auth_token';
 
-// Pre-seeded multi-user accounts representing different RBAC roles
 export const SEED_USERS: UserAccount[] = [
   {
-    id: 'usr-admin-1',
-    email: 'admin@cashflow.com',
+    id: 'usr-pro-1',
+    email: 'pro@cashflow.com',
     name: 'Ahmad Pratama',
-    role: 'admin',
+    role: 'pro',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-    passwordHash: 'admin123',
+    passwordHash: 'pro123',
     created_at: '2026-01-01T00:00:00Z',
   },
   {
-    id: 'usr-finance-1',
-    email: 'finance@cashflow.com',
-    name: 'Siti Rahma',
-    role: 'finance',
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80',
-    passwordHash: 'finance123',
-    created_at: '2026-01-05T00:00:00Z',
-  },
-  {
-    id: 'usr-member-1',
-    email: 'budi@cashflow.com',
+    id: 'usr-basic-1',
+    email: 'basic@cashflow.com',
     name: 'Budi Santoso',
-    role: 'member',
+    role: 'basic',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
-    passwordHash: 'user123',
+    passwordHash: 'basic123',
     created_at: '2026-01-10T00:00:00Z',
-  },
-  {
-    id: 'usr-viewer-1',
-    email: 'viewer@cashflow.com',
-    name: 'Rina Melati',
-    role: 'viewer',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
-    passwordHash: 'viewer123',
-    created_at: '2026-01-15T00:00:00Z',
   },
 ];
 

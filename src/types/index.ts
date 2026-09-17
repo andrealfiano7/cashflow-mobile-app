@@ -2,7 +2,7 @@ export type TransactionType = 'income' | 'expense';
 
 export type VerificationStatus = 'verified' | 'pending' | 'rejected';
 
-export type UserRole = 'admin' | 'finance' | 'member' | 'viewer';
+export type UserRole = 'pro' | 'basic';
 
 export interface User {
   id: string;

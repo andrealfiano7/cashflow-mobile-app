@@ -192,12 +192,12 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
             </button>
           </form>
 
-          {/* Quick Login for Multi-User & RBAC Testing */}
+          {/* Quick Login for Multi-User & Demo Accounts */}
           <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
             <div className="flex items-center justify-between mb-2.5">
               <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                Login Cepat Uji RBAC:
+                Login Cepat Akun Demo:
               </span>
               <span className="text-[10px] text-slate-400">1-Klik Langsung Masuk</span>
             </div>
