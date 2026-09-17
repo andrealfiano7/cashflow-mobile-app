@@ -1,4 +1,4 @@
-﻿import type { User, UserRole, Transaction } from '../types';
+import type { User, UserRole, Transaction } from '../types';
 
 export type AuthAction =
   | 'add_transaction'
@@ -31,14 +31,14 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
     description: 'Pengelola kas: Catat transaksi, analisa laporan, dan verifikasi bukti bayar',
   },
   member: {
-    label: 'Staff / Member',
+    label: 'Staff',
     badgeBg: 'bg-blue-500/10 dark:bg-blue-500/20',
     badgeText: 'text-blue-600 dark:text-blue-400',
     badgeBorder: 'border-blue-500/30',
     description: 'Pencatat mutasi: Dapat menambah transaksi & bukti bayar milik sendiri',
   },
   viewer: {
-    label: 'Auditor / Viewer',
+    label: 'Auditor',
     badgeBg: 'bg-slate-500/10 dark:bg-slate-500/20',
     badgeText: 'text-slate-600 dark:text-slate-400',
     badgeBorder: 'border-slate-500/30',

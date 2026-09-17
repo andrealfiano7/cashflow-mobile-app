@@ -23,29 +23,29 @@ export const Header: React.FC<HeaderProps> = ({
   const roleCfg = currentUser ? ROLE_CONFIGS[currentUser.role] : null;
 
   return (
-    <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 transition-colors">
-      <div className="max-w-md mx-auto flex items-center justify-between">
+    <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3.5 py-2.5 sm:px-4 sm:py-3 transition-colors">
+      <div className="max-w-md mx-auto flex items-center justify-between gap-2">
         {/* App Branding */}
-        <div className="flex items-center gap-2.5">
-          <img src="/logo.png" alt="Cashflow Logo" className="w-10 h-10 object-contain drop-shadow-sm" />
-          <div>
-            <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+        <div className="flex items-center gap-2 min-w-0">
+          <img src="/logo.png" alt="Cashflow Logo" className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-sm shrink-0" />
+          <div className="min-w-0">
+            <h1 className="text-xs sm:text-sm font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5 truncate">
               Cashflow
-              <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-500/15 text-brand-600 dark:text-brand-400 border border-brand-500/30">
+              <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-500/15 text-brand-600 dark:text-brand-400 border border-brand-500/30 shrink-0">
                 Mobile
               </span>
             </h1>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400">Arus Kas &amp; Bukti Transfer</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">Arus Kas &amp; Bukti Transfer</p>
           </div>
         </div>
 
         {/* Right Actions: User Role Chip + Theme Toggle + Backend Status */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1.5 shrink-0">
           {/* User Profile & Role Chip */}
           {currentUser && onOpenProfile && (
             <button
               onClick={onOpenProfile}
-              className="flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 transition-all active:scale-95"
+              className="flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 transition-all active:scale-95 shrink-0"
               title={`Login sebagai ${currentUser.name} (${roleCfg?.label})`}
             >
               <img
@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="w-5 h-5 rounded-full object-cover border border-brand-500/40 shrink-0"
               />
               <span
-                className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded-full border ${roleCfg?.badgeBg} ${roleCfg?.badgeText} ${roleCfg?.badgeBorder}`}
+                className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full border whitespace-nowrap leading-none ${roleCfg?.badgeBg} ${roleCfg?.badgeText} ${roleCfg?.badgeBorder}`}
               >
                 {roleCfg?.label}
               </span>
@@ -64,20 +64,20 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Theme Toggle Button */}
           <button
             onClick={onToggleTheme}
-            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center border border-slate-200 dark:border-slate-700 transition-all active:scale-90"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center border border-slate-200 dark:border-slate-700 transition-all active:scale-90 shrink-0"
             title={theme === 'dark' ? 'Ganti ke Mode Terang (Light)' : 'Ganti ke Mode Gelap (Dark)'}
           >
             {theme === 'dark' ? (
-              <Sun className="w-4 h-4 text-amber-400 animate-spin-slow" />
+              <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 animate-spin-slow" />
             ) : (
-              <Moon className="w-4 h-4 text-slate-700" />
+              <Moon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700" />
             )}
           </button>
 
           {/* Backend Status Badge */}
           <button
             onClick={onOpenConfig}
-            className="flex items-center gap-1.5 px-2 py-1.5 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 transition-all active:scale-95"
+            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 transition-all active:scale-95 shrink-0"
             title="Status Koneksi Database"
           >
             {isSupabaseConfigured ? (
