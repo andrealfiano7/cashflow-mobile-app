@@ -8,7 +8,14 @@ import { ReportsView } from './components/ReportsView';
 import { TransactionModal } from './components/TransactionModal';
 import { ProofLightboxModal } from './components/ProofLightboxModal';
 import { SupabaseConfigModal } from './components/SupabaseConfigModal';
+import { LoginView } from './components/LoginView';
+import { UserProfileModal } from './components/UserProfileModal';
 import { useTheme } from './lib/theme';
+import {
+  checkCurrentUser,
+  logoutUser,
+  canPerformAction,
+} from './lib/auth';
 import {
   fetchTransactions,
   fetchCategories,
@@ -17,11 +24,15 @@ import {
   updateTransactionStatus,
   updateTransactionProof,
 } from './lib/supabase';
-import type { ActiveTab, Transaction, Category, VerificationStatus } from './types';
+import type { ActiveTab, Transaction, Category, VerificationStatus, User } from './types';
 import { Loader2 } from 'lucide-react';
 
 export function App() {
   const { theme, toggleTheme } = useTheme();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -31,6 +42,21 @@ export function App() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedProofTx, setSelectedProofTx] = useState<Transaction | null>(null);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+
+  // Initial Auth Check
+  useEffect(() => {
+    async function initAuth() {
+      try {
+        const user = await checkCurrentUser();
+        setCurrentUser(user);
+      } catch (err) {
+        console.error('Auth verification failed:', err);
+      } finally {
+        setIsAuthChecking(false);
+      }
+    }
+    initAuth();
+  }, []);
 
   // Load transactions and categories
   const loadData = async () => {
@@ -61,7 +87,12 @@ export function App() {
     file?: File | null
   ) => {
     try {
-      const created = await addTransaction(data, file);
+      const txWithUser = {
+        ...data,
+        user_id: currentUser?.id,
+        user_name: currentUser?.name,
+      };
+      const created = await addTransaction(txWithUser, file);
       setTransactions(prev => [created, ...prev]);
     } catch (err: any) {
       alert(`Gagal menambah transaksi: ${err.message || 'Terjadi kesalahan'}`);
@@ -112,6 +143,40 @@ export function App() {
     loadData();
   };
 
+  // Handler: Logout
+  const handleLogout = async () => {
+    await logoutUser();
+    setCurrentUser(null);
+  };
+
+  // Handler: Switch User
+  const handleSwitchUser = (newUser: User) => {
+    setCurrentUser(newUser);
+  };
+
+  // 1. Checking Session Spinner
+  if (isAuthChecking) {
+    return (
+      <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col justify-center items-center gap-3 text-slate-500 dark:text-slate-400">
+        <Loader2 className="w-10 h-10 animate-spin text-brand-600 dark:text-brand-500" />
+        <p className="text-xs font-bold">Memeriksa Sesi Login...</p>
+      </div>
+    );
+  }
+
+  // 2. If Not Logged In, Render Login Screen
+  if (!currentUser) {
+    return (
+      <LoginView
+        onLoginSuccess={user => {
+          setCurrentUser(user);
+          loadData();
+        }}
+      />
+    );
+  }
+
+  // 3. Main Authenticated App
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex justify-center text-slate-800 dark:text-slate-100 transition-colors">
       {/* Mobile Frame Container */}
@@ -121,6 +186,8 @@ export function App() {
           onOpenConfig={() => setIsConfigModalOpen(true)}
           theme={theme}
           onToggleTheme={toggleTheme}
+          currentUser={currentUser}
+          onOpenProfile={() => setIsProfileModalOpen(true)}
         />
 
         {/* Main Content Area */}
@@ -148,6 +215,7 @@ export function App() {
                   onSelectProof={tx => setSelectedProofTx(tx)}
                   onDeleteTransaction={handleDeleteTransaction}
                   onUploadProof={handleUploadProof}
+                  currentUser={currentUser}
                 />
               )}
 
@@ -156,6 +224,7 @@ export function App() {
                   transactions={transactions}
                   onSelectProof={tx => setSelectedProofTx(tx)}
                   onUpdateStatus={handleUpdateStatus}
+                  currentUser={currentUser}
                 />
               )}
 
@@ -170,6 +239,7 @@ export function App() {
           onChangeTab={tab => setActiveTab(tab)}
           onOpenAddModal={() => setIsAddModalOpen(true)}
           pendingProofsCount={pendingProofsCount}
+          canAddTransaction={canPerformAction(currentUser, 'add_transaction')}
         />
 
         {/* Modals */}
@@ -184,12 +254,22 @@ export function App() {
           transaction={selectedProofTx}
           onClose={() => setSelectedProofTx(null)}
           onUpdateStatus={handleUpdateStatus}
+          canUpdateStatus={canPerformAction(currentUser, 'verify_proof')}
         />
 
         <SupabaseConfigModal
           isOpen={isConfigModalOpen}
           onClose={() => setIsConfigModalOpen(false)}
           onResetData={handleResetData}
+        />
+
+        {/* User Profile & Role Switcher Modal */}
+        <UserProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+          onSwitchUser={handleSwitchUser}
         />
       </div>
     </div>

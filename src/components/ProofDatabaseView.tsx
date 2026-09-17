@@ -10,17 +10,21 @@ import {
 } from 'lucide-react';
 import type { Transaction, VerificationStatus } from '../types';
 import { formatRupiah, formatDateIndo, formatBytes } from '../lib/utils';
+import { canPerformAction } from '../lib/auth';
+import type { User } from '../types';
 
 interface ProofDatabaseViewProps {
   transactions: Transaction[];
   onSelectProof: (tx: Transaction) => void;
   onUpdateStatus: (id: string, status: VerificationStatus) => void;
+  currentUser?: User | null;
 }
 
 export const ProofDatabaseView: React.FC<ProofDatabaseViewProps> = ({
   transactions,
   onSelectProof,
   onUpdateStatus,
+  currentUser = null,
 }) => {
   const [statusFilter, setStatusFilter] = useState<'all' | VerificationStatus>('all');
 
@@ -212,25 +216,29 @@ export const ProofDatabaseView: React.FC<ProofDatabaseViewProps> = ({
                       <Eye className="w-3 h-3" /> Lihat Berkas
                     </button>
 
-                    {/* Status Toggles */}
-                    <div className="flex items-center gap-1">
-                      {tx.verification_status !== 'verified' && (
-                        <button
-                          onClick={() => onUpdateStatus(tx.id, 'verified')}
-                          className="px-2 py-0.5 rounded-lg bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-semibold border border-emerald-500/30 transition-all"
-                        >
-                          Verifikasi
-                        </button>
-                      )}
-                      {tx.verification_status !== 'rejected' && (
-                        <button
-                          onClick={() => onUpdateStatus(tx.id, 'rejected')}
-                          className="px-2 py-0.5 rounded-lg bg-rose-600/10 hover:bg-rose-600/20 text-rose-700 dark:text-rose-300 text-[10px] font-semibold border border-rose-500/30 transition-all"
-                        >
-                          Tolak
-                        </button>
-                      )}
-                    </div>
+                    {/* Status Toggles (Only for Admin & Finance) */}
+                    {canPerformAction(currentUser, 'verify_proof') ? (
+                      <div className="flex items-center gap-1">
+                        {tx.verification_status !== 'verified' && (
+                          <button
+                            onClick={() => onUpdateStatus(tx.id, 'verified')}
+                            className="px-2 py-0.5 rounded-lg bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-semibold border border-emerald-500/30 transition-all"
+                          >
+                            Verifikasi
+                          </button>
+                        )}
+                        {tx.verification_status !== 'rejected' && (
+                          <button
+                            onClick={() => onUpdateStatus(tx.id, 'rejected')}
+                            className="px-2 py-0.5 rounded-lg bg-rose-600/10 hover:bg-rose-600/20 text-rose-700 dark:text-rose-300 text-[10px] font-semibold border border-rose-500/30 transition-all"
+                          >
+                            Tolak
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-[10px] text-slate-400 font-medium">Hanya Baca</span>
+                    )}
                   </div>
                 </div>
               </div>

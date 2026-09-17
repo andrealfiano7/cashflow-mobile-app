@@ -14,6 +14,8 @@ import {
 import type { Transaction } from '../types';
 import { formatRupiah, formatDateIndo } from '../lib/utils';
 import { CategoryIcon } from './CategoryIcon';
+import { canPerformAction } from '../lib/auth';
+import type { User } from '../types';
 
 interface TransactionListViewProps {
   transactions: Transaction[];
@@ -21,6 +23,7 @@ interface TransactionListViewProps {
   onSelectProof: (tx: Transaction) => void;
   onDeleteTransaction: (id: string) => void;
   onUploadProof: (id: string, file: File) => Promise<void>;
+  currentUser?: User | null;
 }
 
 export const TransactionListView: React.FC<TransactionListViewProps> = ({
@@ -29,11 +32,13 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
   onSelectProof,
   onDeleteTransaction,
   onUploadProof,
+  currentUser = null,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<'all' | 'income' | 'expense'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [userScope, setUserScope] = useState<'all' | 'mine'>('all');
 
   // Compute Running Balance for all sorted transactions (oldest to newest)
   const sortedChronological = useMemo(() => {
@@ -72,12 +77,15 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
       .filter(tx => {
         const matchesSearch =
           tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          tx.category_name.toLowerCase().includes(searchTerm.toLowerCase());
+          tx.category_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (tx.user_name && tx.user_name.toLowerCase().includes(searchTerm.toLowerCase()));
         const matchesType = typeFilter === 'all' || tx.type === typeFilter;
         const matchesCategory = categoryFilter === 'all' || tx.category_name === categoryFilter;
-        return matchesSearch && matchesType && matchesCategory;
+        const matchesScope =
+          userScope === 'all' || !currentUser || tx.user_id === currentUser.id;
+        return matchesSearch && matchesType && matchesCategory && matchesScope;
       });
-  }, [transactions, searchTerm, typeFilter, categoryFilter]);
+  }, [transactions, searchTerm, typeFilter, categoryFilter, userScope, currentUser]);
 
   // Export to CSV function (mirrors Google Sheet CSV export)
   const handleExportCSV = () => {
@@ -136,6 +144,32 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
 
         {/* Filter Pills */}
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          {/* User Scope Filter (Multi-user) */}
+          {currentUser && (
+            <div className="flex bg-slate-200/80 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-300/80 dark:border-slate-700/60 shrink-0 text-xs">
+              <button
+                onClick={() => setUserScope('all')}
+                className={`px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                  userScope === 'all'
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                Semua User
+              </button>
+              <button
+                onClick={() => setUserScope('mine')}
+                className={`px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+                  userScope === 'mine'
+                    ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 font-semibold shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                Milik Saya
+              </button>
+            </div>
+          )}
+
           {/* Type Filter */}
           <div className="flex bg-slate-200/80 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-300/80 dark:border-slate-700/60 shrink-0 text-xs">
             <button
@@ -193,12 +227,14 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
             <Calendar className="w-10 h-10 text-slate-400 dark:text-slate-600 mx-auto mb-2" />
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-300">Tidak ada transaksi ditemukan</p>
             <p className="text-xs text-slate-500 mt-1">Coba sesuaikan kata kunci atau filter pencarian</p>
-            <button
-              onClick={onOpenAddModal}
-              className="mt-4 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-600 text-white text-xs font-semibold hover:bg-brand-500 shadow-md shadow-brand-600/30"
-            >
-              <Plus className="w-3.5 h-3.5" /> Tambah Transaksi
-            </button>
+            {canPerformAction(currentUser, 'add_transaction') && (
+              <button
+                onClick={onOpenAddModal}
+                className="mt-4 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-600 text-white text-xs font-semibold hover:bg-brand-500 shadow-md shadow-brand-600/30"
+              >
+                <Plus className="w-3.5 h-3.5" /> Tambah Transaksi
+              </button>
+            )}
           </div>
         ) : (
           filteredList.map(tx => (
@@ -222,10 +258,18 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                     <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
                       {tx.description || tx.category_name}
                     </h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
                       <span className="font-medium text-slate-700 dark:text-slate-300">{tx.category_name}</span>
                       <span>•</span>
                       <span>{formatDateIndo(tx.date)}</span>
+                      {tx.user_name && (
+                        <>
+                          <span>•</span>
+                          <span className="px-1.5 py-0.2 rounded-md bg-slate-100 dark:bg-slate-800 text-[9px] font-semibold text-slate-600 dark:text-slate-400">
+                            {tx.user_name.split(' ')[0]}
+                          </span>
+                        </>
+                      )}
                     </p>
 
                     {/* Running balance indicator */}
@@ -287,17 +331,19 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                       </button>
                     )}
 
-                    <button
-                      onClick={() => {
-                        if (confirm(`Hapus transaksi "${tx.description || tx.category_name}"?`)) {
-                          onDeleteTransaction(tx.id);
-                        }
-                      }}
-                      className="p-1 text-slate-400 hover:text-rose-500 dark:text-slate-500 dark:hover:text-rose-400 rounded-lg transition-colors"
-                      title="Hapus Transaksi"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    {canPerformAction(currentUser, 'delete_transaction', tx) && (
+                      <button
+                        onClick={() => {
+                          if (confirm(`Hapus transaksi "${tx.description || tx.category_name}"?`)) {
+                            onDeleteTransaction(tx.id);
+                          }
+                        }}
+                        className="p-1 text-slate-400 hover:text-rose-500 dark:text-slate-500 dark:hover:text-rose-400 rounded-lg transition-colors"
+                        title="Hapus Transaksi"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

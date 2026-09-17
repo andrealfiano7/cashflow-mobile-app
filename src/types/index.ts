@@ -2,6 +2,17 @@ export type TransactionType = 'income' | 'expense';
 
 export type VerificationStatus = 'verified' | 'pending' | 'rejected';
 
+export type UserRole = 'admin' | 'finance' | 'member' | 'viewer';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  avatar?: string;
+  created_at?: string;
+}
+
 export interface Transaction {
   id: string;
   date: string;
@@ -14,6 +25,8 @@ export interface Transaction {
   proof_file_size?: number | null;
   proof_file_type?: string | null;
   verification_status: VerificationStatus;
+  user_id?: string;
+  user_name?: string;
   created_at?: string;
   updated_at?: string;
 }

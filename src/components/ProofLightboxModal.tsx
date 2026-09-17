@@ -15,12 +15,14 @@ interface ProofLightboxModalProps {
   transaction: Transaction | null;
   onClose: () => void;
   onUpdateStatus: (id: string, status: VerificationStatus) => void;
+  canUpdateStatus?: boolean;
 }
 
 export const ProofLightboxModal: React.FC<ProofLightboxModalProps> = ({
   transaction,
   onClose,
   onUpdateStatus,
+  canUpdateStatus = true,
 }) => {
   if (!transaction || !transaction.proof_url) return null;
 
@@ -118,31 +120,37 @@ export const ProofLightboxModal: React.FC<ProofLightboxModalProps> = ({
           </div>
 
           {/* Verification Status Buttons */}
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2">
-            <button
-              onClick={() => onUpdateStatus(transaction.id, 'verified')}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                transaction.verification_status === 'verified'
-                  ? 'bg-emerald-600 text-white shadow-md'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-500/20 hover:text-emerald-700 dark:hover:text-emerald-300 border border-slate-200 dark:border-slate-700'
-              }`}
-            >
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-              <span>Verifikasi Valid</span>
-            </button>
+          {canUpdateStatus ? (
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2">
+              <button
+                onClick={() => onUpdateStatus(transaction.id, 'verified')}
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  transaction.verification_status === 'verified'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-500/20 hover:text-emerald-700 dark:hover:text-emerald-300 border border-slate-200 dark:border-slate-700'
+                }`}
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+                <span>Verifikasi Valid</span>
+              </button>
 
-            <button
-              onClick={() => onUpdateStatus(transaction.id, 'rejected')}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                transaction.verification_status === 'rejected'
-                  ? 'bg-rose-600 text-white shadow-md'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-rose-500/20 hover:text-rose-700 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700'
-              }`}
-            >
-              <XCircle className="w-4 h-4 text-rose-500 dark:text-rose-400" />
-              <span>Tolak Bukti</span>
-            </button>
-          </div>
+              <button
+                onClick={() => onUpdateStatus(transaction.id, 'rejected')}
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  transaction.verification_status === 'rejected'
+                    ? 'bg-rose-600 text-white shadow-md'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-rose-500/20 hover:text-rose-700 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700'
+                }`}
+              >
+                <XCircle className="w-4 h-4 text-rose-500 dark:text-rose-400" />
+                <span>Tolak Bukti</span>
+              </button>
+            </div>
+          ) : (
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 text-center text-[11px] text-slate-400">
+              <span>Status verifikasi hanya dapat diubah oleh <strong>Admin</strong> atau <strong>Finance</strong></span>
+            </div>
+          )}
         </div>
       </div>
     </div>

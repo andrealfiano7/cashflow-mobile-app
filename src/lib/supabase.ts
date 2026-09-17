@@ -52,6 +52,8 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     proof_file_size: 245000,
     proof_file_type: 'application/pdf',
     verification_status: 'verified',
+    user_id: 'usr-admin-1',
+    user_name: 'Ahmad Pratama',
     created_at: new Date(Date.now() - 10 * 86400000).toISOString(),
   },
   {
@@ -66,6 +68,8 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     proof_file_size: 182000,
     proof_file_type: 'image/jpeg',
     verification_status: 'verified',
+    user_id: 'usr-finance-1',
+    user_name: 'Siti Rahma',
     created_at: new Date(Date.now() - 8 * 86400000).toISOString(),
   },
   {
@@ -80,6 +84,8 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     proof_file_size: 312000,
     proof_file_type: 'image/jpeg',
     verification_status: 'verified',
+    user_id: 'usr-member-1',
+    user_name: 'Budi Santoso',
     created_at: new Date(Date.now() - 6 * 86400000).toISOString(),
   },
   {
@@ -94,6 +100,8 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     proof_file_size: 98000,
     proof_file_type: 'image/png',
     verification_status: 'verified',
+    user_id: 'usr-member-1',
+    user_name: 'Budi Santoso',
     created_at: new Date(Date.now() - 5 * 86400000).toISOString(),
   },
   {
@@ -108,6 +116,8 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     proof_file_size: 420000,
     proof_file_type: 'image/jpeg',
     verification_status: 'verified',
+    user_id: 'usr-finance-1',
+    user_name: 'Siti Rahma',
     created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
   },
   {
@@ -122,6 +132,8 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     proof_file_size: 154000,
     proof_file_type: 'image/jpeg',
     verification_status: 'verified',
+    user_id: 'usr-member-1',
+    user_name: 'Budi Santoso',
     created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
   },
   {
@@ -136,6 +148,8 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     proof_file_size: 215000,
     proof_file_type: 'image/jpeg',
     verification_status: 'pending',
+    user_id: 'usr-admin-1',
+    user_name: 'Ahmad Pratama',
     created_at: new Date(Date.now() - 1 * 86400000).toISOString(),
   },
   {
@@ -150,6 +164,8 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     proof_file_size: 320000,
     proof_file_type: 'image/png',
     verification_status: 'pending',
+    user_id: 'usr-finance-1',
+    user_name: 'Siti Rahma',
     created_at: new Date().toISOString(),
   }
 ];

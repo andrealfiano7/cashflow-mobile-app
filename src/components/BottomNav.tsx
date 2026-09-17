@@ -7,6 +7,7 @@ interface BottomNavProps {
   onChangeTab: (tab: ActiveTab) => void;
   onOpenAddModal: () => void;
   pendingProofsCount: number;
+  canAddTransaction?: boolean;
 }
 
 export const BottomNav: React.FC<BottomNavProps> = ({
@@ -14,6 +15,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   onChangeTab,
   onOpenAddModal,
   pendingProofsCount,
+  canAddTransaction = true,
 }) => {
   const tabClass = (tab: ActiveTab) =>
     `relative flex flex-col items-center justify-center flex-1 py-2 px-1 transition-all duration-300 ease-out group outline-none select-none ${
@@ -57,16 +59,20 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         </button>
 
         {/* Floating Center Action Button (+) */}
-        <div className="flex-1 flex justify-center -mt-7 px-1">
-          <button
-            onClick={onOpenAddModal}
-            className="group relative w-14 h-14 rounded-full bg-gradient-to-tr from-[#C73618] via-[#F16744] to-[#F6A278] text-white flex items-center justify-center shadow-[0_8px_25px_rgba(241,103,68,0.5)] hover:shadow-[0_12px_32px_rgba(241,103,68,0.7)] ring-[3px] ring-slate-900 dark:ring-slate-950 active:scale-[0.88] transition-all duration-300 ease-out focus:outline-none"
-            title="Tambah Transaksi Baru"
-          >
-            <span className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <Plus className="w-6 h-6 stroke-[3] group-hover:rotate-90 transition-transform duration-500 ease-out drop-shadow-sm" />
-          </button>
-        </div>
+        {canAddTransaction ? (
+          <div className="flex-1 flex justify-center -mt-7 px-1">
+            <button
+              onClick={onOpenAddModal}
+              className="group relative w-14 h-14 rounded-full bg-gradient-to-tr from-[#C73618] via-[#F16744] to-[#F6A278] text-white flex items-center justify-center shadow-[0_8px_25px_rgba(241,103,68,0.5)] hover:shadow-[0_12px_32px_rgba(241,103,68,0.7)] ring-[3px] ring-slate-900 dark:ring-slate-950 active:scale-[0.88] transition-all duration-300 ease-out focus:outline-none"
+              title="Tambah Transaksi Baru"
+            >
+              <span className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <Plus className="w-6 h-6 stroke-[3] group-hover:rotate-90 transition-transform duration-500 ease-out drop-shadow-sm" />
+            </button>
+          </div>
+        ) : (
+          <div className="w-4" />
+        )}
 
         {/* Tab 3: Bukti Bayar */}
         <button onClick={() => onChangeTab('proofs')} className={tabClass('proofs')}>
