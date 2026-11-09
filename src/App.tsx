@@ -8,16 +8,9 @@ import { ReportsView } from './components/ReportsView';
 import { TransactionModal } from './components/TransactionModal';
 import { ProofLightboxModal } from './components/ProofLightboxModal';
 import { SupabaseConfigModal } from './components/SupabaseConfigModal';
-import { LoginView } from './components/LoginView';
-import { UserProfileModal } from './components/UserProfileModal';
 import { UpgradeModal, type UpgradeReason } from './components/UpgradeModal';
 import { useTheme } from './lib/theme';
-import {
-  checkCurrentUser,
-  logoutUser,
-  canPerformAction,
-  hasReachedTransactionLimit,
-} from './lib/auth';
+import { BASIC_TRANSACTION_LIMIT } from './lib/auth';
 import {
   fetchTransactions,
   fetchCategories,
@@ -26,14 +19,16 @@ import {
   updateTransactionStatus,
   updateTransactionProof,
 } from './lib/supabase';
-import type { ActiveTab, Transaction, Category, VerificationStatus, User } from './types';
+import type { ActiveTab, Transaction, Category, VerificationStatus, AppTier } from './types';
 import { Loader2 } from 'lucide-react';
 
 export function App() {
   const { theme, toggleTheme } = useTheme();
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [isAuthChecking, setIsAuthChecking] = useState(true);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  // Tier state (Pro vs Basic) - saved locally in browser
+  const [tier, setTier] = useState<AppTier>(() => {
+    return (localStorage.getItem('cashflow_app_tier') as AppTier) || 'pro';
+  });
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -47,22 +42,16 @@ export function App() {
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [upgradeReason, setUpgradeReason] = useState<UpgradeReason | string>('transaction_limit');
 
-  // Initial Auth Check
-  useEffect(() => {
-    async function initAuth() {
-      try {
-        const user = await checkCurrentUser();
-        setCurrentUser(user);
-      } catch (err) {
-        console.error('Auth verification failed:', err);
-      } finally {
-        setIsAuthChecking(false);
-      }
-    }
-    initAuth();
-  }, []);
+  const handleSetTier = (newTier: AppTier) => {
+    setTier(newTier);
+    localStorage.setItem('cashflow_app_tier', newTier);
+  };
 
-  // Load transactions and categories
+  const handleToggleTier = () => {
+    handleSetTier(tier === 'pro' ? 'basic' : 'pro');
+  };
+
+  // Load transactions and categories from local storage
   const loadData = async () => {
     try {
       setIsLoading(true);
@@ -87,8 +76,8 @@ export function App() {
 
   // Quota calculation for basic vs pro
   const isQuotaFull = useMemo(() => {
-    return hasReachedTransactionLimit(currentUser, transactions);
-  }, [currentUser, transactions]);
+    return tier === 'basic' && transactions.length >= BASIC_TRANSACTION_LIMIT;
+  }, [tier, transactions]);
 
   const openUpgradeModal = (reason: UpgradeReason | string = 'transaction_limit') => {
     setUpgradeReason(reason);
@@ -103,37 +92,8 @@ export function App() {
     setIsAddModalOpen(true);
   };
 
-  const handleUpgradeToPro = async () => {
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email: 'pro@cashflow.com', password: 'pro123' }),
-      });
-      let data: any = null;
-      try {
-        const text = await res.text();
-        data = text ? JSON.parse(text) : null;
-      } catch (e) {}
-      if (data?.user) {
-        setCurrentUser(data.user);
-        localStorage.setItem('cashflow_active_user', JSON.stringify(data.user));
-        return;
-      }
-    } catch (err) {
-      console.warn('API login for upgrade error, falling back locally', err);
-    }
-
-    const proUser: User = {
-      id: 'usr-pro-1',
-      email: 'pro@cashflow.com',
-      name: 'Ahmad Pratama',
-      role: 'pro',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-    };
-    setCurrentUser(proUser);
-    localStorage.setItem('cashflow_active_user', JSON.stringify(proUser));
+  const handleUpgradeToPro = () => {
+    handleSetTier('pro');
   };
 
   // Handler: Add Transaction
@@ -146,12 +106,7 @@ export function App() {
       return;
     }
     try {
-      const txWithUser = {
-        ...data,
-        user_id: currentUser?.id,
-        user_name: currentUser?.name,
-      };
-      const created = await addTransaction(txWithUser, file);
+      const created = await addTransaction(data, file);
       setTransactions(prev => [created, ...prev]);
     } catch (err: any) {
       alert(`Gagal menambah transaksi: ${err.message || 'Terjadi kesalahan'}`);
@@ -202,40 +157,6 @@ export function App() {
     loadData();
   };
 
-  // Handler: Logout
-  const handleLogout = async () => {
-    await logoutUser();
-    setCurrentUser(null);
-  };
-
-  // Handler: Switch User
-  const handleSwitchUser = (newUser: User) => {
-    setCurrentUser(newUser);
-  };
-
-  // 1. Checking Session Spinner
-  if (isAuthChecking) {
-    return (
-      <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col justify-center items-center gap-3 text-slate-500 dark:text-slate-400">
-        <Loader2 className="w-10 h-10 animate-spin text-brand-600 dark:text-brand-500" />
-        <p className="text-xs font-bold">Memeriksa Sesi Login...</p>
-      </div>
-    );
-  }
-
-  // 2. If Not Logged In, Render Login Screen
-  if (!currentUser) {
-    return (
-      <LoginView
-        onLoginSuccess={user => {
-          setCurrentUser(user);
-          loadData();
-        }}
-      />
-    );
-  }
-
-  // 3. Main Authenticated App
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex justify-center text-slate-800 dark:text-slate-100 transition-colors">
       {/* Mobile Frame Container */}
@@ -245,8 +166,9 @@ export function App() {
           onOpenConfig={() => setIsConfigModalOpen(true)}
           theme={theme}
           onToggleTheme={toggleTheme}
-          currentUser={currentUser}
-          onOpenProfile={() => setIsProfileModalOpen(true)}
+          tier={tier}
+          onToggleTier={handleToggleTier}
+          onOpenUpgrade={openUpgradeModal}
         />
 
         {/* Main Content Area */}
@@ -274,7 +196,7 @@ export function App() {
                   onSelectProof={tx => setSelectedProofTx(tx)}
                   onDeleteTransaction={handleDeleteTransaction}
                   onUploadProof={handleUploadProof}
-                  currentUser={currentUser}
+                  tier={tier}
                   onOpenUpgrade={openUpgradeModal}
                 />
               )}
@@ -284,14 +206,13 @@ export function App() {
                   transactions={transactions}
                   onSelectProof={tx => setSelectedProofTx(tx)}
                   onUpdateStatus={handleUpdateStatus}
-                  currentUser={currentUser}
                 />
               )}
 
               {activeTab === 'reports' && (
                 <ReportsView
                   transactions={transactions}
-                  currentUser={currentUser}
+                  tier={tier}
                   onOpenUpgrade={openUpgradeModal}
                 />
               )}
@@ -305,7 +226,7 @@ export function App() {
           onChangeTab={tab => setActiveTab(tab)}
           onOpenAddModal={handleRequestAddModal}
           pendingProofsCount={pendingProofsCount}
-          canAddTransaction={canPerformAction(currentUser, 'add_transaction')}
+          canAddTransaction={true}
         />
 
         {/* Modals */}
@@ -314,7 +235,7 @@ export function App() {
           onClose={() => setIsAddModalOpen(false)}
           categories={categories}
           onSubmit={handleAddTransaction}
-          currentUser={currentUser}
+          tier={tier}
           onOpenUpgrade={openUpgradeModal}
           isQuotaFull={isQuotaFull}
         />
@@ -323,22 +244,12 @@ export function App() {
           transaction={selectedProofTx}
           onClose={() => setSelectedProofTx(null)}
           onUpdateStatus={handleUpdateStatus}
-          canUpdateStatus={canPerformAction(currentUser, 'verify_proof')}
         />
 
         <SupabaseConfigModal
           isOpen={isConfigModalOpen}
           onClose={() => setIsConfigModalOpen(false)}
           onResetData={handleResetData}
-        />
-
-        {/* User Profile & Role Switcher Modal */}
-        <UserProfileModal
-          isOpen={isProfileModalOpen}
-          onClose={() => setIsProfileModalOpen(false)}
-          currentUser={currentUser}
-          onLogout={handleLogout}
-          onSwitchUser={handleSwitchUser}
         />
 
         {/* SaaS Tier Upgrade Modal */}

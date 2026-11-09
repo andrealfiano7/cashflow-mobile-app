@@ -1,4 +1,5 @@
 import type { User, UserRole, Transaction } from '../types';
+export type { AppTier } from '../types';
 
 export type AuthAction =
   | 'add_transaction'

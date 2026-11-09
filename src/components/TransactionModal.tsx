@@ -12,7 +12,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import type { Category, Transaction, TransactionType, User } from '../types';
+import type { Category, Transaction, TransactionType, AppTier } from '../types';
 import { formatBytes } from '../lib/utils';
 import { CategoryIcon } from './CategoryIcon';
 
@@ -24,7 +24,7 @@ interface TransactionModalProps {
     data: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>,
     file?: File | null
   ) => Promise<void>;
-  currentUser?: User | null;
+  tier?: AppTier;
   onOpenUpgrade?: (reason?: string) => void;
   isQuotaFull?: boolean;
 }
@@ -34,7 +34,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   onClose,
   categories,
   onSubmit,
-  currentUser = null,
+  tier = 'pro',
   onOpenUpgrade,
   isQuotaFull = false,
 }) => {
@@ -71,7 +71,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
     setAmountStr(new Intl.NumberFormat('id-ID').format(num));
   };
 
-  const isBasic = currentUser?.role === 'basic';
+  const isBasic = tier === 'basic';
   const maxSizeBytes = isBasic ? 2 * 1024 * 1024 : 10 * 1024 * 1024;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

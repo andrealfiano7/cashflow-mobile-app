@@ -1,18 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { TrendingUp, TrendingDown, Sparkles, Lock } from 'lucide-react';
-import type { Transaction, User } from '../types';
+import type { Transaction, AppTier } from '../types';
 import { formatRupiah } from '../lib/utils';
 import { CategoryIcon } from './CategoryIcon';
 
 interface ReportsViewProps {
   transactions: Transaction[];
-  currentUser?: User | null;
+  tier?: AppTier;
   onOpenUpgrade?: (reason?: string) => void;
 }
 
 export const ReportsView: React.FC<ReportsViewProps> = ({
   transactions,
-  currentUser = null,
+  tier = 'pro',
   onOpenUpgrade,
 }) => {
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
@@ -116,7 +116,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
       </div>
 
       {/* Financial Health / Savings Ratio Section */}
-      {currentUser?.role === 'basic' ? (
+      {tier === 'basic' ? (
         <div className="relative rounded-2xl border border-amber-500/30 overflow-hidden shadow-soft bg-gradient-to-br from-amber-500/5 via-orange-500/5 to-slate-100 dark:to-slate-850 p-5">
           {/* Blurred preview mock behind */}
           <div className="filter blur-sm select-none pointer-events-none opacity-40 space-y-3">

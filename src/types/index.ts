@@ -2,6 +2,8 @@ export type TransactionType = 'income' | 'expense';
 
 export type VerificationStatus = 'verified' | 'pending' | 'rejected';
 
+export type AppTier = 'pro' | 'basic';
+
 export type UserRole = 'pro' | 'basic';
 
 export interface User {

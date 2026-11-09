@@ -201,7 +201,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
               className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white font-black text-xs shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 active:scale-95 hover:opacity-95 transition-all"
             >
               <Sparkles className="w-4 h-4 text-amber-200" />
-              <span>Upgrade ke Akun Pro Sekarang</span>
+              <span>Aktifkan Paket Pro Sekarang</span>
             </button>
             <button
               type="button"
