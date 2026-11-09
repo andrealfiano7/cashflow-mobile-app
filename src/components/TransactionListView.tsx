@@ -10,18 +10,10 @@ import {
   Calendar,
   Upload,
   Loader2,
-  Lock,
-  Zap,
-  Sparkles,
-  CheckCircle2,
 } from 'lucide-react';
 import type { Transaction } from '../types';
 import { formatRupiah, formatDateIndo } from '../lib/utils';
 import { CategoryIcon } from './CategoryIcon';
-import {
-  BASIC_TRANSACTION_LIMIT,
-} from '../lib/auth';
-import type { AppTier } from '../types';
 
 interface TransactionListViewProps {
   transactions: Transaction[];
@@ -29,8 +21,6 @@ interface TransactionListViewProps {
   onSelectProof: (tx: Transaction) => void;
   onDeleteTransaction: (id: string) => void;
   onUploadProof: (id: string, file: File) => Promise<void>;
-  tier?: AppTier;
-  onOpenUpgrade?: (reason?: string) => void;
 }
 
 export const TransactionListView: React.FC<TransactionListViewProps> = ({
@@ -39,8 +29,6 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
   onSelectProof,
   onDeleteTransaction,
   onUploadProof,
-  tier = 'pro',
-  onOpenUpgrade,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [uploadingId, setUploadingId] = useState<string | null>(null);
@@ -115,100 +103,23 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
     document.body.removeChild(link);
   };
 
-  const isBasic = tier === 'basic';
-  const userTxCount = transactions.length;
-  const quotaPercent = Math.min(100, Math.round((userTxCount / BASIC_TRANSACTION_LIMIT) * 100));
-  const isQuotaFull = isBasic && userTxCount >= BASIC_TRANSACTION_LIMIT;
-
-  const onExportClick = () => {
-    if (isBasic) {
-      onOpenUpgrade?.('export_csv');
-      return;
-    }
-    handleExportCSV();
-  };
-
   return (
     <div className="space-y-4 pb-24">
       {/* Header & Export Button */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <span>Buku Kas (Cashflow)</span>
-            {!isBasic && (
-              <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 hidden sm:inline-flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" /> Kuota Tanpa Batas
-              </span>
-            )}
-          </h2>
+          <h2 className="text-base font-bold text-slate-900 dark:text-white">Buku Kas (Cashflow)</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">Daftar transaksi & saldo berjalan</p>
         </div>
         <button
-          onClick={onExportClick}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium active:scale-95 transition-all shadow-sm ${
-            isBasic
-              ? 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 border-dashed border-slate-300 dark:border-slate-700 hover:border-amber-500'
-              : 'bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700'
-          }`}
-          title={isBasic ? 'Export CSV (Fitur Khusus Pro)' : 'Export CSV'}
+          onClick={handleExportCSV}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-medium active:scale-95 transition-all shadow-sm"
+          title="Export data ke CSV"
         >
-          {isBasic ? (
-            <>
-              <Lock className="w-3.5 h-3.5 text-amber-500" />
-              <span>Export CSV</span>
-              <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-                Pro
-              </span>
-            </>
-          ) : (
-            <>
-              <Download className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-              <span>Export CSV</span>
-            </>
-          )}
+          <Download className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
+          <span>Export CSV</span>
         </button>
       </div>
-
-      {/* Basic Plan Quota Card */}
-      {isBasic && (
-        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-transparent border border-amber-500/25 shadow-sm flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-amber-500" />
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                Kuota Transaksi Basic
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold text-slate-700 dark:text-slate-300">
-                {userTxCount} / {BASIC_TRANSACTION_LIMIT}
-              </span>
-              <button
-                type="button"
-                onClick={() => onOpenUpgrade?.('transaction_limit')}
-                className="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-sm hover:opacity-95 active:scale-95 transition-all flex items-center gap-1"
-              >
-                <Sparkles className="w-3 h-3 text-amber-100" />
-                <span>Buka Tanpa Batas</span>
-              </button>
-            </div>
-          </div>
-          {/* Progress Bar */}
-          <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                isQuotaFull ? 'bg-rose-500' : quotaPercent > 70 ? 'bg-amber-500' : 'bg-brand-500'
-              }`}
-              style={{ width: `${quotaPercent}%` }}
-            />
-          </div>
-          {isQuotaFull && (
-            <p className="text-[11px] text-rose-500 dark:text-rose-400 font-semibold flex items-center gap-1">
-              ⚠️ Batas 15 transaksi tercapai. Upgrade ke Pro untuk menambah transaksi baru.
-            </p>
-          )}
-        </div>
-      )}
 
       {/* Search and Filters */}
       <div className="space-y-2.5">

@@ -8,9 +8,7 @@ import { ReportsView } from './components/ReportsView';
 import { TransactionModal } from './components/TransactionModal';
 import { ProofLightboxModal } from './components/ProofLightboxModal';
 import { SupabaseConfigModal } from './components/SupabaseConfigModal';
-import { UpgradeModal, type UpgradeReason } from './components/UpgradeModal';
 import { useTheme } from './lib/theme';
-import { BASIC_TRANSACTION_LIMIT } from './lib/auth';
 import {
   fetchTransactions,
   fetchCategories,
@@ -19,16 +17,11 @@ import {
   updateTransactionStatus,
   updateTransactionProof,
 } from './lib/supabase';
-import type { ActiveTab, Transaction, Category, VerificationStatus, AppTier } from './types';
+import type { ActiveTab, Transaction, Category, VerificationStatus } from './types';
 import { Loader2 } from 'lucide-react';
 
 export function App() {
   const { theme, toggleTheme } = useTheme();
-
-  // Tier state (Pro vs Basic) - saved locally in browser
-  const [tier, setTier] = useState<AppTier>(() => {
-    return (localStorage.getItem('cashflow_app_tier') as AppTier) || 'pro';
-  });
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -39,17 +32,6 @@ export function App() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedProofTx, setSelectedProofTx] = useState<Transaction | null>(null);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
-  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
-  const [upgradeReason, setUpgradeReason] = useState<UpgradeReason | string>('transaction_limit');
-
-  const handleSetTier = (newTier: AppTier) => {
-    setTier(newTier);
-    localStorage.setItem('cashflow_app_tier', newTier);
-  };
-
-  const handleToggleTier = () => {
-    handleSetTier(tier === 'pro' ? 'basic' : 'pro');
-  };
 
   // Load transactions and categories from local storage
   const loadData = async () => {
@@ -74,37 +56,11 @@ export function App() {
     return transactions.filter(t => t.proof_url && t.verification_status === 'pending').length;
   }, [transactions]);
 
-  // Quota calculation for basic vs pro
-  const isQuotaFull = useMemo(() => {
-    return tier === 'basic' && transactions.length >= BASIC_TRANSACTION_LIMIT;
-  }, [tier, transactions]);
-
-  const openUpgradeModal = (reason: UpgradeReason | string = 'transaction_limit') => {
-    setUpgradeReason(reason);
-    setIsUpgradeModalOpen(true);
-  };
-
-  const handleRequestAddModal = () => {
-    if (isQuotaFull) {
-      openUpgradeModal('transaction_limit');
-      return;
-    }
-    setIsAddModalOpen(true);
-  };
-
-  const handleUpgradeToPro = () => {
-    handleSetTier('pro');
-  };
-
   // Handler: Add Transaction
   const handleAddTransaction = async (
     data: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>,
     file?: File | null
   ) => {
-    if (isQuotaFull) {
-      openUpgradeModal('transaction_limit');
-      return;
-    }
     try {
       const created = await addTransaction(data, file);
       setTransactions(prev => [created, ...prev]);
@@ -166,9 +122,6 @@ export function App() {
           onOpenConfig={() => setIsConfigModalOpen(true)}
           theme={theme}
           onToggleTheme={toggleTheme}
-          tier={tier}
-          onToggleTier={handleToggleTier}
-          onOpenUpgrade={openUpgradeModal}
         />
 
         {/* Main Content Area */}
@@ -183,7 +136,7 @@ export function App() {
               {activeTab === 'dashboard' && (
                 <DashboardView
                   transactions={transactions}
-                  onOpenAddModal={handleRequestAddModal}
+                  onOpenAddModal={() => setIsAddModalOpen(true)}
                   onSelectProof={tx => setSelectedProofTx(tx)}
                   onChangeTab={tab => setActiveTab(tab)}
                 />
@@ -192,12 +145,10 @@ export function App() {
               {activeTab === 'transactions' && (
                 <TransactionListView
                   transactions={transactions}
-                  onOpenAddModal={handleRequestAddModal}
+                  onOpenAddModal={() => setIsAddModalOpen(true)}
                   onSelectProof={tx => setSelectedProofTx(tx)}
                   onDeleteTransaction={handleDeleteTransaction}
                   onUploadProof={handleUploadProof}
-                  tier={tier}
-                  onOpenUpgrade={openUpgradeModal}
                 />
               )}
 
@@ -212,8 +163,6 @@ export function App() {
               {activeTab === 'reports' && (
                 <ReportsView
                   transactions={transactions}
-                  tier={tier}
-                  onOpenUpgrade={openUpgradeModal}
                 />
               )}
             </>
@@ -224,7 +173,7 @@ export function App() {
         <BottomNav
           activeTab={activeTab}
           onChangeTab={tab => setActiveTab(tab)}
-          onOpenAddModal={handleRequestAddModal}
+          onOpenAddModal={() => setIsAddModalOpen(true)}
           pendingProofsCount={pendingProofsCount}
           canAddTransaction={true}
         />
@@ -235,9 +184,6 @@ export function App() {
           onClose={() => setIsAddModalOpen(false)}
           categories={categories}
           onSubmit={handleAddTransaction}
-          tier={tier}
-          onOpenUpgrade={openUpgradeModal}
-          isQuotaFull={isQuotaFull}
         />
 
         <ProofLightboxModal
@@ -250,14 +196,6 @@ export function App() {
           isOpen={isConfigModalOpen}
           onClose={() => setIsConfigModalOpen(false)}
           onResetData={handleResetData}
-        />
-
-        {/* SaaS Tier Upgrade Modal */}
-        <UpgradeModal
-          isOpen={isUpgradeModalOpen}
-          onClose={() => setIsUpgradeModalOpen(false)}
-          reason={upgradeReason}
-          onUpgrade={handleUpgradeToPro}
         />
       </div>
     </div>

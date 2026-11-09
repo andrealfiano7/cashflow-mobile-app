@@ -9,10 +9,9 @@ import {
   Loader2,
   TrendingUp,
   TrendingDown,
-  Sparkles,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import type { Category, Transaction, TransactionType, AppTier } from '../types';
+import type { Category, Transaction, TransactionType } from '../types';
 import { formatBytes } from '../lib/utils';
 import { CategoryIcon } from './CategoryIcon';
 
@@ -24,9 +23,6 @@ interface TransactionModalProps {
     data: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>,
     file?: File | null
   ) => Promise<void>;
-  tier?: AppTier;
-  onOpenUpgrade?: (reason?: string) => void;
-  isQuotaFull?: boolean;
 }
 
 export const TransactionModal: React.FC<TransactionModalProps> = ({
@@ -34,9 +30,6 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   onClose,
   categories,
   onSubmit,
-  tier = 'pro',
-  onOpenUpgrade,
-  isQuotaFull = false,
 }) => {
   const [type, setType] = useState<TransactionType>('expense');
   const [amountStr, setAmountStr] = useState('');
@@ -71,20 +64,14 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
     setAmountStr(new Intl.NumberFormat('id-ID').format(num));
   };
 
-  const isBasic = tier === 'basic';
-  const maxSizeBytes = isBasic ? 2 * 1024 * 1024 : 10 * 1024 * 1024;
+  const maxSizeBytes = 10 * 1024 * 1024; // 10MB
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (file.size > maxSizeBytes) {
-      if (isBasic) {
-        setErrorMsg('Ukuran file melebihi 2MB (batas akun Basic). Upgrade ke Pro 💎 untuk upload berkas resolusi tinggi (HD) hingga 10MB!');
-        onOpenUpgrade?.('hd_upload');
-      } else {
-        setErrorMsg('Ukuran file maksimal 10MB');
-      }
+      setErrorMsg('Ukuran file maksimal 10MB');
       return;
     }
 
@@ -112,12 +99,6 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (isBasic && isQuotaFull) {
-      setErrorMsg('Batas kuota 15 transaksi akun Basic telah tercapai. Upgrade ke Pro untuk menambah transaksi baru!');
-      onOpenUpgrade?.('transaction_limit');
-      return;
-    }
 
     const rawAmount = parseInt(amountStr.replace(/[^0-9]/g, ''), 10);
 
@@ -306,25 +287,9 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 <span>Upload Bukti Transfer / Struk</span>
                 <span className="text-[10px] text-slate-400 font-normal">(Opsional)</span>
               </label>
-              {isBasic ? (
-                <div className="flex items-center gap-1">
-                  <span className="text-[10px] text-slate-400 dark:text-slate-500">Maks 2MB</span>
-                  <span className="text-slate-300 dark:text-slate-600">•</span>
-                  <button
-                    type="button"
-                    onClick={() => onOpenUpgrade?.('hd_upload')}
-                    className="text-[10px] text-amber-600 dark:text-amber-400 font-bold hover:underline flex items-center gap-0.5"
-                  >
-                    <Sparkles className="w-2.5 h-2.5" />
-                    <span>HD 10MB</span>
-                  </button>
-                </div>
-              ) : (
-                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1">
-                  <Sparkles className="w-2.5 h-2.5" />
-                  <span>HD Upload Aktif (10MB)</span>
-                </span>
-              )}
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+                Maks 10MB
+              </span>
             </div>
 
             <input
