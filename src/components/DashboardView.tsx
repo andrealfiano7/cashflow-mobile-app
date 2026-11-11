@@ -6,11 +6,14 @@ import {
   FileCheck2,
   ArrowRight,
   BarChart3,
+  Activity,
   PieChart as PieIcon,
   ChevronDown,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
+  AreaChart,
+  Area,
   BarChart,
   Bar,
   XAxis,
@@ -62,6 +65,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onChangeTab,
 }) => {
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
+  const [chartMode, setChartMode] = useState<'area' | 'bar'>('area');
 
   const availableMonths = useMemo(() => {
     const months = new Set<string>();
@@ -130,30 +134,39 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     };
   }, [filteredTransactions]);
 
-  // Bar chart data (Grouped by month if 'all', else by date)
+  // Chart data (Smart granularity: group by date when <= 14 unique dates, else by month)
   const barChartData = useMemo(() => {
-    const mapData: Record<string, { date: string; displayDate: string; masuk: number; keluar: number }> = {};
-    const sorted = [...filteredTransactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const mapData: Record<
+      string,
+      { date: string; displayDate: string; fullLabel: string; masuk: number; keluar: number; saldo: number }
+    > = {};
+    const sorted = [...filteredTransactions].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    const uniqueDates = new Set(sorted.map(t => t.date));
+    const groupByMonth = selectedMonth === 'all' && uniqueDates.size > 14;
 
     sorted.forEach(tx => {
       const d = new Date(tx.date);
       let key = '';
       let display = '';
+      let fullLabel = '';
 
-      if (selectedMonth === 'all') {
-        // Group by Month
+      if (groupByMonth) {
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');
         key = `${year}-${month}`;
         display = d.toLocaleDateString('id-ID', { month: 'short', year: '2-digit' });
+        fullLabel = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
       } else {
-        // Group by Day
         key = tx.date;
-        display = `${d.getDate()}/${d.getMonth() + 1}`;
+        display = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+        fullLabel = formatDateIndo(tx.date);
       }
 
       if (!mapData[key]) {
-        mapData[key] = { date: key, displayDate: display, masuk: 0, keluar: 0 };
+        mapData[key] = { date: key, displayDate: display, fullLabel, masuk: 0, keluar: 0, saldo: 0 };
       }
 
       if (tx.type === 'income') {
@@ -163,8 +176,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       }
     });
 
-    const values = Object.values(mapData);
-    return selectedMonth === 'all' ? values : values; 
+    let running = 0;
+    return Object.values(mapData).map(item => {
+      running += item.masuk - item.keluar;
+      return {
+        ...item,
+        saldo: running,
+      };
+    });
   }, [filteredTransactions, selectedMonth]);
 
   // Donut chart data (Expenses by category)
@@ -276,93 +295,240 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Bar Chart: Cash Inflow vs Outflow */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/90 dark:border-slate-800/90 shadow-soft transition-colors">
-        <div className="flex items-center justify-between gap-2 mb-4">
+      {/* Cashflow Trend & Comparison Chart (Area & Pill Bar) */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/90 dark:border-slate-800/90 shadow-soft transition-colors space-y-3.5">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center shrink-0">
-              <BarChart3 className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 flex items-center justify-center shrink-0">
+              {chartMode === 'area' ? <Activity className="w-4 h-4" /> : <BarChart3 className="w-4 h-4" />}
             </div>
             <div className="min-w-0">
-              <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-tight truncate">Arus Masuk vs Keluar</h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal mt-0.5 truncate">Perbandingan per periode transaksi</p>
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                Tren Arus Kas
+              </h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal mt-0.5">
+                Ringkasan per tanggal
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[11px] font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-500" />
-              <span>Masuk</span>
-            </div>
-            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-[11px] font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-              <span>Keluar</span>
-            </div>
+
+          {/* Mode Switcher: Area vs Batang */}
+          <div className="h-8 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/80 dark:border-slate-700/70 flex items-center gap-0.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setChartMode('area')}
+              className={`px-2.5 h-7 rounded-lg text-[11px] font-semibold transition-all flex items-center gap-1 ${
+                chartMode === 'area'
+                  ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              <Activity className="w-3 h-3" />
+              <span>Area</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setChartMode('bar')}
+              className={`px-2.5 h-7 rounded-lg text-[11px] font-semibold transition-all flex items-center gap-1 ${
+                chartMode === 'bar'
+                  ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              <BarChart3 className="w-3 h-3" />
+              <span>Batang</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Compact Summary Legend Strip (No Truncation) */}
+        <div className="grid grid-cols-2 gap-2.5">
+          <div className="p-2.5 rounded-xl bg-slate-50/90 dark:bg-slate-850/70 border border-slate-200/60 dark:border-slate-800 flex flex-col gap-0.5">
+            <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+              <span className="w-2 h-2 rounded-full bg-brand-500 shrink-0" />
+              <span>Total Masuk</span>
+            </span>
+            <span className="text-xs sm:text-sm font-extrabold text-brand-600 dark:text-brand-400 tabular-nums">
+              {formatRupiah(summary.income)}
+            </span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50/90 dark:bg-slate-850/70 border border-slate-200/60 dark:border-slate-800 flex flex-col gap-0.5">
+            <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+              <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+              <span>Total Keluar</span>
+            </span>
+            <span className="text-xs sm:text-sm font-extrabold text-rose-500 dark:text-rose-400 tabular-nums">
+              {formatRupiah(summary.expense)}
+            </span>
           </div>
         </div>
 
         {barChartData.length > 0 ? (
-          <div className="h-48 w-full pt-1">
+          <div className="h-52 w-full pt-1">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={barChartData} margin={{ top: 10, right: 6, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="barMasukGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#0193A5" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#027184" stopOpacity={0.9} />
-                  </linearGradient>
-                  <linearGradient id="barKeluarGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#F16744" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#C73618" stopOpacity={0.9} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-slate-100 dark:text-slate-800/80" />
-                <XAxis
-                  dataKey="displayDate"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
-                  dy={6}
-                />
-                <YAxis
-                  width={44}
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
-                  tickFormatter={val => (val === 0 ? '0' : val >= 1000000 ? `${+(val / 1000000).toFixed(1)}jt` : `${Math.round(val / 1000)}rb`)}
-                />
-                <Tooltip
-                  cursor={{ fill: 'rgba(148, 163, 184, 0.08)', radius: 8 }}
-                  content={({ active, payload, label }) => {
-                    if (!active || !payload || !payload.length) return null;
-                    const masukVal = Number(payload.find(p => p.dataKey === 'masuk')?.value || 0);
-                    const keluarVal = Number(payload.find(p => p.dataKey === 'keluar')?.value || 0);
-                    const net = masukVal - keluarVal;
-                    return (
-                      <div className="bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md border border-slate-700/80 text-white rounded-2xl p-3 shadow-2xl text-[11px] min-w-[170px] space-y-1.5 animate-scale-in">
-                        <div className="font-bold text-slate-300 pb-1.5 border-b border-slate-800 flex items-center justify-between">
-                          <span>Tgl: {label}</span>
-                          <span className={`text-[11px] font-extrabold ${net >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                            {net >= 0 ? '+' : ''}{formatRupiah(net)}
-                          </span>
+              {chartMode === 'area' ? (
+                <AreaChart data={barChartData} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="areaMasukGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#0193A5" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#0193A5" stopOpacity={0.02} />
+                    </linearGradient>
+                    <linearGradient id="areaKeluarGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#F16744" stopOpacity={0.32} />
+                      <stop offset="95%" stopColor="#F16744" stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-slate-100 dark:text-slate-800/80" />
+                  <XAxis
+                    dataKey="displayDate"
+                    axisLine={false}
+                    tickLine={false}
+                    interval="preserveStartEnd"
+                    minTickGap={16}
+                    tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }}
+                    dy={6}
+                  />
+                  <YAxis
+                    width={44}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }}
+                    tickFormatter={val => (val === 0 ? '0' : val >= 1000000 ? `${+(val / 1000000).toFixed(1)}jt` : `${Math.round(val / 1000)}rb`)}
+                  />
+                  <Tooltip
+                    cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '4 4' }}
+                    content={({ active, payload }) => {
+                      if (!active || !payload || !payload.length) return null;
+                      const row = payload[0]?.payload;
+                      const masukVal = Number(row?.masuk || 0);
+                      const keluarVal = Number(row?.keluar || 0);
+                      const net = masukVal - keluarVal;
+                      return (
+                        <div className="bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md border border-slate-700/80 text-white rounded-xl p-3 shadow-2xl text-[11px] min-w-[175px] space-y-1.5">
+                          <div className="font-bold text-slate-200 pb-1.5 border-b border-slate-800 flex items-center justify-between gap-3">
+                            <span>{row?.fullLabel || row?.displayDate}</span>
+                            <span className={`text-[11px] font-extrabold tabular-nums ${net >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                              {net >= 0 ? '+' : ''}{formatRupiah(net)}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-emerald-400 font-medium">
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-brand-400" /> Masuk
+                            </span>
+                            <span className="font-bold tabular-nums">{formatRupiah(masukVal)}</span>
+                          </div>
+                          <div className="flex items-center justify-between text-rose-400 font-medium">
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-rose-400" /> Keluar
+                            </span>
+                            <span className="font-bold tabular-nums">{formatRupiah(keluarVal)}</span>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between text-emerald-400 font-medium">
-                          <span className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400" /> Masuk
-                          </span>
-                          <span className="font-bold">{formatRupiah(masukVal)}</span>
+                      );
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="masuk"
+                    stroke="#0193A5"
+                    strokeWidth={2.5}
+                    fill="url(#areaMasukGrad)"
+                    dot={{ r: 3, strokeWidth: 2, fill: '#ffffff', stroke: '#0193A5' }}
+                    activeDot={{ r: 5, strokeWidth: 2, fill: '#0193A5', stroke: '#ffffff' }}
+                    name="Dana Masuk"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="keluar"
+                    stroke="#F16744"
+                    strokeWidth={2.5}
+                    fill="url(#areaKeluarGrad)"
+                    dot={{ r: 3, strokeWidth: 2, fill: '#ffffff', stroke: '#F16744' }}
+                    activeDot={{ r: 5, strokeWidth: 2, fill: '#F16744', stroke: '#ffffff' }}
+                    name="Total Keluar"
+                  />
+                </AreaChart>
+              ) : (
+                <BarChart data={barChartData} margin={{ top: 10, right: 6, left: 0, bottom: 0 }} barGap={3}>
+                  <defs>
+                    <linearGradient id="barMasukGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#0193A5" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#027184" stopOpacity={0.9} />
+                    </linearGradient>
+                    <linearGradient id="barKeluarGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#F16744" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#C73618" stopOpacity={0.9} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-slate-100 dark:text-slate-800/80" />
+                  <XAxis
+                    dataKey="displayDate"
+                    axisLine={false}
+                    tickLine={false}
+                    interval="preserveStartEnd"
+                    minTickGap={12}
+                    tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }}
+                    dy={6}
+                  />
+                  <YAxis
+                    width={44}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }}
+                    tickFormatter={val => (val === 0 ? '0' : val >= 1000000 ? `${+(val / 1000000).toFixed(1)}jt` : `${Math.round(val / 1000)}rb`)}
+                  />
+                  <Tooltip
+                    cursor={{ fill: 'rgba(148, 163, 184, 0.08)', radius: 8 }}
+                    content={({ active, payload }) => {
+                      if (!active || !payload || !payload.length) return null;
+                      const row = payload[0]?.payload;
+                      const masukVal = Number(row?.masuk || 0);
+                      const keluarVal = Number(row?.keluar || 0);
+                      const net = masukVal - keluarVal;
+                      return (
+                        <div className="bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md border border-slate-700/80 text-white rounded-xl p-3 shadow-2xl text-[11px] min-w-[175px] space-y-1.5">
+                          <div className="font-bold text-slate-200 pb-1.5 border-b border-slate-800 flex items-center justify-between gap-3">
+                            <span>{row?.fullLabel || row?.displayDate}</span>
+                            <span className={`text-[11px] font-extrabold tabular-nums ${net >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                              {net >= 0 ? '+' : ''}{formatRupiah(net)}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-emerald-400 font-medium">
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-brand-400" /> Masuk
+                            </span>
+                            <span className="font-bold tabular-nums">{formatRupiah(masukVal)}</span>
+                          </div>
+                          <div className="flex items-center justify-between text-rose-400 font-medium">
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-rose-400" /> Keluar
+                            </span>
+                            <span className="font-bold tabular-nums">{formatRupiah(keluarVal)}</span>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between text-rose-400 font-medium">
-                          <span className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-rose-400" /> Keluar
-                          </span>
-                          <span className="font-bold">{formatRupiah(keluarVal)}</span>
-                        </div>
-                      </div>
-                    );
-                  }}
-                />
-                <Bar dataKey="masuk" fill="url(#barMasukGrad)" radius={[6, 6, 2, 2]} barSize={12} maxBarSize={16} name="Dana Masuk" />
-                <Bar dataKey="keluar" fill="url(#barKeluarGrad)" radius={[6, 6, 2, 2]} barSize={12} maxBarSize={16} name="Total Keluar" />
-              </BarChart>
+                      );
+                    }}
+                  />
+                  <Bar
+                    dataKey="masuk"
+                    stackId="cashflow"
+                    fill="url(#barMasukGrad)"
+                    radius={[6, 6, 6, 6]}
+                    barSize={16}
+                    maxBarSize={20}
+                    name="Dana Masuk"
+                  />
+                  <Bar
+                    dataKey="keluar"
+                    stackId="cashflow"
+                    fill="url(#barKeluarGrad)"
+                    radius={[6, 6, 6, 6]}
+                    barSize={16}
+                    maxBarSize={20}
+                    name="Total Keluar"
+                  />
+                </BarChart>
+              )}
             </ResponsiveContainer>
           </div>
         ) : (
@@ -381,8 +547,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <PieIcon className="w-4 h-4" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-tight truncate">Distribusi Kategori Pengeluaran</h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal mt-0.5 truncate">Persentase pengeluaran per pos dana</p>
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-tight">Distribusi Kategori Pengeluaran</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal mt-0.5">Persentase per pos pengeluaran</p>
             </div>
           </div>
           {summary.expense > 0 && (
