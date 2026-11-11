@@ -5,6 +5,7 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PU
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = Boolean(
+  import.meta.env.VITE_USE_SUPABASE === 'true' &&
   supabaseUrl &&
   supabaseAnonKey &&
   supabaseUrl !== 'https://your-project.supabase.co' &&
@@ -39,6 +40,45 @@ const getTodayOffset = (daysAgo: number) => {
   return d.toISOString().split('T')[0];
 };
 
+function createReceiptDataUrl(
+  title: string,
+  category: string,
+  amount: number,
+  date: string,
+  type: 'income' | 'expense',
+  refId: string
+): string {
+  const esc = (s: string) =>
+    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const accent = type === 'income' ? '#0193A5' : '#F16744';
+  const badgeBg = type === 'income' ? '#d7f0f4' : '#ffe8de';
+  const badgeText = type === 'income' ? '#004A59' : '#9e2d16';
+  const formattedAmt = 'Rp ' + amount.toLocaleString('id-ID');
+  const label = type === 'income' ? 'DANA MASUK' : 'BUKTI PEMBAYARAN';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="600" viewBox="0 0 480 600">
+    <rect width="480" height="600" rx="24" fill="#f8fafc"/>
+    <rect x="24" y="24" width="432" height="552" rx="20" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+    <rect x="24" y="24" width="432" height="10" rx="5" fill="${accent}"/>
+    <circle cx="240" cy="96" r="28" fill="${badgeBg}"/>
+    <path d="M228 96l8 8 16-16" fill="none" stroke="${accent}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="240" y="152" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="${badgeText}" letter-spacing="1.5">${label}</text>
+    <text x="240" y="194" text-anchor="middle" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#0f172a">${formattedAmt}</text>
+    <text x="240" y="222" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#64748b">${esc(title)}</text>
+    <line x1="56" y1="256" x2="424" y2="256" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="6 6"/>
+    <text x="56" y="300" font-family="system-ui, sans-serif" font-size="13" fill="#64748b">Kategori</text>
+    <text x="424" y="300" text-anchor="end" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#1e293b">${esc(category)}</text>
+    <text x="56" y="344" font-family="system-ui, sans-serif" font-size="13" fill="#64748b">Tanggal Transaksi</text>
+    <text x="424" y="344" text-anchor="end" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#1e293b">${date}</text>
+    <text x="56" y="388" font-family="system-ui, sans-serif" font-size="13" fill="#64748b">No. Referensi</text>
+    <text x="424" y="388" text-anchor="end" font-family="monospace" font-size="13" font-weight="700" fill="#1e293b">${refId}</text>
+    <text x="56" y="432" font-family="system-ui, sans-serif" font-size="13" fill="#64748b">Status</text>
+    <text x="424" y="432" text-anchor="end" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="${accent}">BERHASIL</text>
+    <line x1="56" y1="472" x2="424" y2="472" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="240" y="516" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#94a3b8">Arsip Digital Cashflow</text>
+  </svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
 const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: 'tx-1',
@@ -47,13 +87,11 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     category_name: 'Gaji & Upah',
     amount: 12500000,
     description: 'Gaji Bulanan Utama PT Teknologi',
-    proof_url: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80',
+    proof_url: createReceiptDataUrl('Gaji Bulanan Utama PT Teknologi', 'Gaji & Upah', 12500000, getTodayOffset(10), 'income', 'CF-2026-0901'),
     proof_file_name: 'slip_gaji_september.pdf',
     proof_file_size: 245000,
     proof_file_type: 'application/pdf',
     verification_status: 'verified',
-    user_id: 'usr-pro-1',
-    user_name: 'Ahmad Pratama',
     created_at: new Date(Date.now() - 10 * 86400000).toISOString(),
   },
   {
@@ -63,13 +101,11 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     category_name: 'Tagihan & Utilitas',
     amount: 1450000,
     description: 'Pembayaran Listrik PLN & Air PDAM',
-    proof_url: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&w=800&q=80',
+    proof_url: createReceiptDataUrl('Pembayaran Listrik PLN & Air PDAM', 'Tagihan & Utilitas', 1450000, getTodayOffset(8), 'expense', 'CF-2026-0902'),
     proof_file_name: 'struk_pln_pdam.jpg',
     proof_file_size: 182000,
     proof_file_type: 'image/jpeg',
     verification_status: 'verified',
-    user_id: 'usr-pro-1',
-    user_name: 'Ahmad Pratama',
     created_at: new Date(Date.now() - 8 * 86400000).toISOString(),
   },
   {
@@ -79,13 +115,11 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     category_name: 'Belanja',
     amount: 2350000,
     description: 'Belanja Perlengkapan Kantor & Rumah',
-    proof_url: 'https://images.unsplash.com/photo-1556742049-0a67e557224f?auto=format&fit=crop&w=800&q=80',
+    proof_url: createReceiptDataUrl('Belanja Perlengkapan Kantor & Rumah', 'Belanja', 2350000, getTodayOffset(6), 'expense', 'CF-2026-0903'),
     proof_file_name: 'struk_supermarket.jpg',
     proof_file_size: 312000,
     proof_file_type: 'image/jpeg',
     verification_status: 'verified',
-    user_id: 'usr-basic-1',
-    user_name: 'Budi Santoso',
     created_at: new Date(Date.now() - 6 * 86400000).toISOString(),
   },
   {
@@ -95,13 +129,11 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     category_name: 'Makanan & Minuman',
     amount: 485000,
     description: 'Makan Siang Tim & Kopi',
-    proof_url: 'https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=800&q=80',
+    proof_url: createReceiptDataUrl('Makan Siang Tim & Kopi', 'Makanan & Minuman', 485000, getTodayOffset(5), 'expense', 'CF-2026-0904'),
     proof_file_name: 'bukti_qris_resto.png',
     proof_file_size: 98000,
     proof_file_type: 'image/png',
     verification_status: 'verified',
-    user_id: 'usr-basic-1',
-    user_name: 'Budi Santoso',
     created_at: new Date(Date.now() - 5 * 86400000).toISOString(),
   },
   {
@@ -111,13 +143,11 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     category_name: 'Hasil Penjualan / Bisnis',
     amount: 4750000,
     description: 'Pembayaran Invoice Client Web Project',
-    proof_url: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=800&q=80',
+    proof_url: createReceiptDataUrl('Pembayaran Invoice Client Web Project', 'Hasil Penjualan / Bisnis', 4750000, getTodayOffset(3), 'income', 'CF-2026-0905'),
     proof_file_name: 'transfer_bca_client.jpg',
     proof_file_size: 420000,
     proof_file_type: 'image/jpeg',
     verification_status: 'verified',
-    user_id: 'usr-pro-1',
-    user_name: 'Ahmad Pratama',
     created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
   },
   {
@@ -127,13 +157,11 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     category_name: 'Kebutuhan Rumah',
     amount: 850000,
     description: 'Isi Ulang Gas & Galon Bulanan',
-    proof_url: 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=800&q=80',
+    proof_url: createReceiptDataUrl('Isi Ulang Gas & Galon Bulanan', 'Kebutuhan Rumah', 850000, getTodayOffset(2), 'expense', 'CF-2026-0906'),
     proof_file_name: 'nota_toko_berkah.jpg',
     proof_file_size: 154000,
     proof_file_type: 'image/jpeg',
     verification_status: 'verified',
-    user_id: 'usr-basic-1',
-    user_name: 'Budi Santoso',
     created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
   },
   {
@@ -143,13 +171,11 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     category_name: 'Transfer Keluar',
     amount: 1200000,
     description: 'Transfer Cicilan Kendaraan',
-    proof_url: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80',
+    proof_url: createReceiptDataUrl('Transfer Cicilan Kendaraan', 'Transfer Keluar', 1200000, getTodayOffset(1), 'expense', 'CF-2026-0907'),
     proof_file_name: 'mutasi_mbanking_transfer.jpg',
     proof_file_size: 215000,
     proof_file_type: 'image/jpeg',
     verification_status: 'pending',
-    user_id: 'usr-pro-1',
-    user_name: 'Ahmad Pratama',
     created_at: new Date(Date.now() - 1 * 86400000).toISOString(),
   },
   {
@@ -159,13 +185,11 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     category_name: 'Dividen & Investasi',
     amount: 850000,
     description: 'Hasil Dividen Reksadana Pasar Uang',
-    proof_url: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80',
+    proof_url: createReceiptDataUrl('Hasil Dividen Reksadana Pasar Uang', 'Dividen & Investasi', 850000, getTodayOffset(0), 'income', 'CF-2026-0908'),
     proof_file_name: 'screenshot_bibit.png',
     proof_file_size: 320000,
     proof_file_type: 'image/png',
     verification_status: 'pending',
-    user_id: 'usr-basic-1',
-    user_name: 'Budi Santoso',
     created_at: new Date().toISOString(),
   }
 ];
@@ -180,7 +204,34 @@ function getLocalTransactions(): Transaction[] {
     return INITIAL_TRANSACTIONS;
   }
   try {
-    return JSON.parse(data);
+    const parsed: Transaction[] = JSON.parse(data);
+    let migrated = false;
+    const updated = parsed.map((tx, idx) => {
+      if (
+        tx.proof_url &&
+        (tx.proof_url.includes('images.unsplash.com') ||
+          tx.proof_url.includes('w3.org') ||
+          (tx.proof_url.startsWith('data:image/svg+xml') && !tx.proof_url.includes('%26amp%3B') && tx.proof_url.includes('%26')))
+      ) {
+        migrated = true;
+        return {
+          ...tx,
+          proof_url: createReceiptDataUrl(
+            tx.description || tx.category_name,
+            tx.category_name,
+            Number(tx.amount),
+            tx.date,
+            tx.type,
+            `CF-2026-090${idx + 1}`
+          ),
+        };
+      }
+      return tx;
+    });
+    if (migrated) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+    }
+    return updated;
   } catch {
     return INITIAL_TRANSACTIONS;
   }

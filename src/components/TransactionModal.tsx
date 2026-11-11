@@ -10,7 +10,6 @@ import {
   TrendingUp,
   TrendingDown,
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import type { Category, Transaction, TransactionType } from '../types';
 import { formatBytes } from '../lib/utils';
 import { CategoryIcon } from './CategoryIcon';
@@ -127,13 +126,6 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         },
         selectedFile
       );
-
-      // Trigger celebratory confetti
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.7 },
-      });
 
       // Reset form
       setAmountStr('');

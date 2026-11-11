@@ -10,6 +10,7 @@ import {
   Calendar,
   Upload,
   Loader2,
+  ChevronDown,
 } from 'lucide-react';
 import type { Transaction } from '../types';
 import { formatRupiah, formatDateIndo } from '../lib/utils';
@@ -109,39 +110,39 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
       <div className="flex items-center justify-between gap-2">
         <div>
           <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">Buku Kas (Cashflow)</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 leading-normal mt-0.5">Daftar transaksi & saldo berjalan</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-normal mt-0.5">Daftar transaksi &amp; saldo berjalan</p>
         </div>
         <button
           onClick={handleExportCSV}
-          className="flex items-center gap-1.5 px-3 min-h-10 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-semibold active:scale-95 transition-all shadow-sm shrink-0"
+          className="flex items-center gap-1.5 px-3 h-9 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-semibold active:scale-95 transition-all shadow-sm shrink-0"
           title="Unduh riwayat transaksi ke format CSV / Excel"
         >
           <Download className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-          <span>Unduh Data</span>
+          <span>Unduh CSV</span>
         </button>
       </div>
 
       {/* Search and Filters */}
-      <div className="space-y-2.5">
+      <div className="space-y-2">
         {/* Search Bar */}
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder="Cari transaksi atau keterangan..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="w-full bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors shadow-sm"
+            className="w-full h-10 bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-9 pr-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors shadow-sm"
           />
         </div>
 
         {/* Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+        <div className="flex items-center gap-2">
           {/* Type Filter */}
-          <div className="flex bg-slate-200/80 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-300/80 dark:border-slate-700/60 shrink-0 text-xs">
+          <div className="h-9 bg-slate-200/80 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 flex items-center gap-0.5 shrink-0">
             <button
               onClick={() => setTypeFilter('all')}
-              className={`px-3 min-h-9 rounded-lg text-xs transition-all ${
+              className={`px-2.5 h-7 rounded-lg text-xs transition-all flex items-center justify-center ${
                 typeFilter === 'all'
                   ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm'
                   : 'text-slate-600 dark:text-slate-400'
@@ -151,39 +152,48 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
             </button>
             <button
               onClick={() => setTypeFilter('income')}
-              className={`px-3 min-h-9 rounded-lg text-xs transition-all flex items-center gap-1 ${
+              className={`px-2.5 h-7 rounded-lg text-xs transition-all flex items-center justify-center gap-1 ${
                 typeFilter === 'income'
                   ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 font-semibold shadow-sm'
                   : 'text-slate-600 dark:text-slate-400'
               }`}
             >
-              <ArrowDownCircle className="w-3 h-3" /> Masuk
+              <ArrowDownCircle className="w-3 h-3" />
+              <span>Masuk</span>
             </button>
             <button
               onClick={() => setTypeFilter('expense')}
-              className={`px-3 min-h-9 rounded-lg text-xs transition-all flex items-center gap-1 ${
+              className={`px-2.5 h-7 rounded-lg text-xs transition-all flex items-center justify-center gap-1 ${
                 typeFilter === 'expense'
                   ? 'bg-white dark:bg-slate-700 text-rose-600 dark:text-rose-400 font-semibold shadow-sm'
                   : 'text-slate-600 dark:text-slate-400'
               }`}
             >
-              <ArrowUpCircle className="w-3 h-3" /> Keluar
+              <ArrowUpCircle className="w-3 h-3" />
+              <span>Keluar</span>
             </button>
           </div>
 
           {/* Category Dropdown */}
-          <select
-            value={categoryFilter}
-            onChange={e => setCategoryFilter(e.target.value)}
-            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-xl px-2.5 min-h-10 shrink-0 focus:outline-none shadow-sm"
-          >
-            <option value="all">Semua Kategori</option>
-            {categories.map(cat => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
+          <div className="relative flex-1 min-w-0">
+            <div className="w-full h-9 px-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium flex items-center justify-between gap-1.5 shadow-sm">
+              <span className="truncate">{categoryFilter === 'all' ? 'Semua Kategori' : categoryFilter}</span>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
+            </div>
+            <select
+              aria-label="Filter Kategori"
+              value={categoryFilter}
+              onChange={e => setCategoryFilter(e.target.value)}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            >
+              <option value="all">Semua Kategori</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -223,15 +233,16 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                     <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate leading-snug">
                       {tx.description || tx.category_name}
                     </h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap leading-tight">
-                      <span className="font-medium text-slate-700 dark:text-slate-300">{tx.category_name}</span>
-                      <span>•</span>
-                      <span>{formatDateIndo(tx.date)}</span>
-                    </p>
+                    <div className="text-[11px] mt-1 flex items-center gap-1.5 flex-wrap leading-tight">
+                      <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-medium text-slate-700 dark:text-slate-300">
+                        {tx.category_name}
+                      </span>
+                      <span className="text-slate-500 dark:text-slate-400">{formatDateIndo(tx.date)}</span>
+                    </div>
 
                     {/* Running balance indicator */}
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 tabular-nums leading-tight">
-                      Saldo: <span className="text-slate-700 dark:text-slate-300 font-semibold">{formatRupiah(runningBalances[tx.id] || 0)}</span>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 tabular-nums leading-tight">
+                      Saldo berjalan: <span className="text-slate-700 dark:text-slate-300 font-semibold">{formatRupiah(runningBalances[tx.id] || 0)}</span>
                     </p>
                   </div>
                 </div>
