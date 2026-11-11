@@ -23,7 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="min-w-0">
             <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5 truncate leading-tight">
               Cashflow
-              <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-500/15 text-brand-600 dark:text-brand-400 border border-brand-500/30 shrink-0 leading-none">
+              <span className="text-[11px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-500/15 text-brand-600 dark:text-brand-400 border border-brand-500/30 shrink-0 leading-none">
                 Mobile
               </span>
             </h1>
@@ -36,11 +36,11 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Theme Toggle Button */}
           <button
             onClick={onToggleTheme}
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center border border-slate-200 dark:border-slate-700 transition-all active:scale-90 shrink-0"
+            className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center border border-slate-200 dark:border-slate-700 transition-all active:scale-90 shrink-0"
             title={theme === 'dark' ? 'Ganti ke Mode Terang (Light)' : 'Ganti ke Mode Gelap (Dark)'}
           >
             {theme === 'dark' ? (
-              <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 animate-spin-slow" />
+              <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
             ) : (
               <Moon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700" />
             )}
@@ -49,19 +49,19 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Storage / Backend Status Badge */}
           <button
             onClick={onOpenConfig}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 transition-all active:scale-95 shrink-0"
+            className="flex items-center gap-1 px-3 min-h-9 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 transition-all active:scale-95 shrink-0"
             title="Penyimpanan Data Lokal"
           >
             {isSupabaseConfigured ? (
               <>
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-emerald-700 dark:text-emerald-400 text-[10px] font-semibold hidden sm:inline">Cloud</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="text-emerald-700 dark:text-emerald-400 text-[11px] font-semibold">Cloud</span>
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               </>
             ) : (
               <>
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-slate-700 dark:text-slate-300 text-[10px] font-semibold hidden sm:inline">Lokal</span>
+                <span className="text-slate-700 dark:text-slate-300 text-[11px] font-semibold">Lokal</span>
                 <HardDrive className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
               </>
             )}

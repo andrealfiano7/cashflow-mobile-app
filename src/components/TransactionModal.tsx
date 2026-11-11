@@ -158,7 +158,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="w-10 h-10 shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -212,7 +212,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Nominal (Rupiah)</label>
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400 dark:text-slate-500">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-500 dark:text-slate-400">
                 Rp
               </span>
               <input
@@ -285,9 +285,9 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <span>Upload Bukti Transfer / Struk</span>
-                <span className="text-[10px] text-slate-400 font-normal">(Opsional)</span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">(Opsional)</span>
               </label>
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                 Maks 10MB
               </span>
             </div>
@@ -311,7 +311,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                   Ambil Foto Kamera / Pilih Berkas
                 </p>
-                <p className="text-[10px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-slate-500 mt-0.5">
                   Mendukung JPG, PNG, WEBP, atau struk PDF
                 </p>
               </div>
@@ -332,8 +332,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{selectedFile.name}</p>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{formatBytes(selectedFile.size)}</p>
-                  <span className="text-[10px] text-brand-600 dark:text-brand-400 font-semibold flex items-center gap-1 mt-1">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{formatBytes(selectedFile.size)}</p>
+                  <span className="text-[11px] text-brand-600 dark:text-brand-400 font-semibold flex items-center gap-1 mt-1">
                     <Check className="w-3 h-3" /> Berkas siap diupload
                   </span>
                 </div>
@@ -341,7 +341,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 <button
                   type="button"
                   onClick={removeFile}
-                  className="p-2 text-slate-400 hover:text-rose-500 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                  className="w-10 h-10 flex items-center justify-center shrink-0 text-slate-500 dark:text-slate-400 hover:text-rose-500 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
                   title="Hapus berkas"
                 >
                   <Trash2 className="w-4 h-4" />

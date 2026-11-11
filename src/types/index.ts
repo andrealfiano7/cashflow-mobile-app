@@ -2,17 +2,6 @@ export type TransactionType = 'income' | 'expense';
 
 export type VerificationStatus = 'verified' | 'pending' | 'rejected';
 
-export type UserRole = 'pro' | 'basic';
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  avatar?: string;
-  created_at?: string;
-}
-
 export interface Transaction {
   id: string;
   date: string;

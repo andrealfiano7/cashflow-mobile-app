@@ -21,7 +21,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     `relative flex flex-col items-center justify-center flex-1 py-2 px-1 transition-all duration-300 ease-out group outline-none select-none ${
       activeTab === tab
         ? 'text-brand-500 dark:text-brand-400'
-        : 'text-slate-400 dark:text-slate-500 active:text-slate-600 dark:active:text-slate-300'
+        : 'text-slate-500 dark:text-slate-400 active:text-slate-600 dark:active:text-slate-300'
     }`;
 
   const iconClass = (tab: ActiveTab) =>
@@ -79,7 +79,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           <div className="relative">
             <FileCheck2 className={iconClass('proofs')} />
             {pendingProofsCount > 0 && (
-              <span className="absolute -top-1.5 -right-2.5 bg-gradient-to-r from-rose-500 to-rose-400 text-white font-extrabold text-[9px] min-w-[17px] h-[17px] px-1 rounded-full shadow-md shadow-rose-500/40 ring-2 ring-slate-900 dark:ring-slate-950 flex items-center justify-center animate-pulse">
+              <span className="absolute -top-1.5 -right-2.5 bg-gradient-to-r from-rose-500 to-rose-400 text-white font-extrabold text-[11px] min-w-[17px] h-[17px] px-1 rounded-full shadow-md shadow-rose-500/40 ring-2 ring-slate-900 dark:ring-slate-950 flex items-center justify-center">
                 {pendingProofsCount > 9 ? '9+' : pendingProofsCount}
               </span>
             )}

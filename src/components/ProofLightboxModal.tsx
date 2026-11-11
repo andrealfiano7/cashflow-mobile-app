@@ -37,7 +37,7 @@ export const ProofLightboxModal: React.FC<ProofLightboxModalProps> = ({
             <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
               {transaction.proof_file_name || 'Bukti Transfer'}
             </h3>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
               {formatBytes(transaction.proof_file_size)} • {formatDateIndo(transaction.date)}
             </p>
           </div>
@@ -89,7 +89,7 @@ export const ProofLightboxModal: React.FC<ProofLightboxModalProps> = ({
         <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">Transaksi Terkait</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Transaksi Terkait</p>
               <h4 className="text-xs font-bold text-slate-900 dark:text-white">
                 {transaction.description || transaction.category_name}
               </h4>
@@ -100,7 +100,7 @@ export const ProofLightboxModal: React.FC<ProofLightboxModalProps> = ({
 
             {/* Current Status Badge */}
             <div className="text-right">
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 mb-1">Status Verifikasi</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-1">Status Verifikasi</p>
               {transaction.verification_status === 'verified' && (
                 <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Terverifikasi
@@ -147,7 +147,7 @@ export const ProofLightboxModal: React.FC<ProofLightboxModalProps> = ({
               </button>
             </div>
           ) : (
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 text-center text-[11px] text-slate-400">
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 text-center text-[11px] text-slate-500 dark:text-slate-400">
               <span>Status verifikasi hanya dapat diubah oleh <strong>Admin</strong> atau <strong>Finance</strong></span>
             </div>
           )}

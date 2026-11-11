@@ -33,7 +33,7 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">Status Database</h3>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">Penyimpanan Cloud Supabase</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Penyimpanan Cloud Supabase</p>
             </div>
           </div>
           <button
@@ -66,7 +66,7 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
                     <Database className="w-4 h-4 text-brand-600 dark:text-brand-400" />
                     <span className="font-medium text-[11px]">Database Transaksi</span>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
                     PostgreSQL Online
                   </span>
                 </div>
@@ -76,7 +76,7 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
                     <HardDrive className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     <span className="font-medium text-[11px]">Penyimpanan Bukti</span>
                   </div>
-                  <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+                  <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
                     transfer-proofs
                   </span>
                 </div>
@@ -86,7 +86,7 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
                     <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <span className="font-medium text-[11px]">Keamanan & Sync</span>
                   </div>
-                  <span className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">
+                  <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
                     Terenkripsi SSL
                   </span>
                 </div>

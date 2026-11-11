@@ -203,7 +203,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           {onOpenAddModal && (
             <button
               onClick={onOpenAddModal}
-              className="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md shadow-brand-600/30 flex items-center gap-1 active:scale-95 transition-all"
+              className="px-3.5 min-h-10 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md shadow-brand-600/30 flex items-center gap-1 active:scale-95 transition-all"
             >
               <span>+ Catat</span>
             </button>
@@ -255,11 +255,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
       {/* Filter Tabs */}
       <div className="flex items-center justify-between gap-2 px-1">
-        <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">Arus Kas & Distribusi</h2>
+        <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">Arus Kas & Distribusi</h2>
         <select
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
-          className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/50 appearance-none font-medium"
+          className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-xl px-3 min-h-9 focus:outline-none focus:ring-2 focus:ring-brand-500/50 appearance-none font-medium"
           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200.0/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' class='w-4 h-4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1em', paddingRight: '2rem' }}
         >
           <option value="all">Semua Waktu</option>
@@ -282,11 +282,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               <span>Masuk</span>
             </div>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-[10px] font-bold">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-[11px] font-bold">
               <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
               <span>Keluar</span>
             </div>
@@ -312,13 +312,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   dataKey="displayDate"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }}
+                  tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
                   dy={6}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }}
+                  tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
                   dx={-2}
                   tickFormatter={val => (val >= 1000000 ? `${(val / 1000000).toFixed(1)}M` : `${Math.round(val / 1000)}k`)}
                 />
@@ -333,7 +333,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       <div className="bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md border border-slate-700/80 text-white rounded-2xl p-3 shadow-2xl text-[11px] min-w-[170px] space-y-1.5 animate-scale-in">
                         <div className="font-bold text-slate-300 pb-1.5 border-b border-slate-800 flex items-center justify-between">
                           <span>Tgl: {label}</span>
-                          <span className={`text-[10px] font-extrabold ${net >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                          <span className={`text-[11px] font-extrabold ${net >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                             {net >= 0 ? '+' : ''}{formatRupiah(net)}
                           </span>
                         </div>
@@ -359,7 +359,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </ResponsiveContainer>
           </div>
         ) : (
-          <div className="h-36 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 text-xs gap-1">
+          <div className="h-36 flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 text-xs gap-1">
             <BarChart3 className="w-6 h-6 stroke-[1.5] text-slate-300 dark:text-slate-600" />
             <span>Belum ada data transaksi di periode ini</span>
           </div>
@@ -420,7 +420,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                             <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: data.payload.fill }} />
                             <span className="font-semibold text-slate-200">{data.name}:</span>
                             <span className="font-bold text-emerald-400 tabular-nums">{formatRupiah(Number(data.value))}</span>
-                            <span className="text-[10px] text-slate-400 font-mono">({pct}%)</span>
+                            <span className="text-[11px] text-slate-400 font-mono">({pct}%)</span>
                           </div>
                         );
                       }}
@@ -430,7 +430,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                 {/* Center Total Display */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 leading-tight">
+                  <span className="text-[11px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400 leading-tight">
                     Total Keluar
                   </span>
                   <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white tracking-tight px-2 text-center tabular-nums leading-snug mt-0.5">
@@ -467,7 +467,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                           style={{ width: `${pct}%`, backgroundColor: color }}
                         />
                       </div>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200/80 dark:border-slate-700 font-mono">
+                      <span className="text-[11px] font-bold px-1.5 py-0.5 rounded-md bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200/80 dark:border-slate-700 font-mono">
                         {pct}%
                       </span>
                       <span className="font-bold text-slate-900 dark:text-slate-100 text-xs min-w-[70px] text-right tabular-nums">
@@ -480,7 +480,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
         ) : (
-          <div className="h-36 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 text-xs gap-1">
+          <div className="h-36 flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 text-xs gap-1">
             <PieIcon className="w-6 h-6 stroke-[1.5] text-slate-300 dark:text-slate-600" />
             <span>Tidak ada pengeluaran pada periode ini</span>
           </div>
@@ -496,7 +496,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <button
             onClick={() => onChangeTab('transactions')}
-            className="text-[11px] sm:text-xs text-brand-600 dark:text-brand-400 font-semibold flex items-center gap-1 hover:underline shrink-0"
+            className="text-[11px] sm:text-xs text-brand-600 dark:text-brand-400 font-semibold flex items-center gap-1 hover:underline shrink-0 min-h-9"
           >
             Lihat Semua <ArrowRight className="w-3.5 h-3.5" />
           </button>
@@ -542,7 +542,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     <span>Bukti</span>
                   </button>
                 ) : (
-                  <span className="text-[11px] text-slate-400 dark:text-slate-500 leading-none mt-0.5 inline-block">Tanpa bukti</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-none mt-0.5 inline-block">Tanpa bukti</span>
                 )}
               </div>
             </div>

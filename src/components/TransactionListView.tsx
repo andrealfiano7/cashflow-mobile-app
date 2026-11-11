@@ -113,7 +113,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
         </div>
         <button
           onClick={handleExportCSV}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-semibold active:scale-95 transition-all shadow-sm shrink-0"
+          className="flex items-center gap-1.5 px-3 min-h-10 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-semibold active:scale-95 transition-all shadow-sm shrink-0"
           title="Unduh riwayat transaksi ke format CSV / Excel"
         >
           <Download className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
@@ -141,7 +141,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
           <div className="flex bg-slate-200/80 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-300/80 dark:border-slate-700/60 shrink-0 text-xs">
             <button
               onClick={() => setTypeFilter('all')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+              className={`px-3 min-h-9 rounded-lg text-xs transition-all ${
                 typeFilter === 'all'
                   ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm'
                   : 'text-slate-600 dark:text-slate-400'
@@ -151,7 +151,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
             </button>
             <button
               onClick={() => setTypeFilter('income')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] transition-all flex items-center gap-1 ${
+              className={`px-3 min-h-9 rounded-lg text-xs transition-all flex items-center gap-1 ${
                 typeFilter === 'income'
                   ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 font-semibold shadow-sm'
                   : 'text-slate-600 dark:text-slate-400'
@@ -161,7 +161,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
             </button>
             <button
               onClick={() => setTypeFilter('expense')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] transition-all flex items-center gap-1 ${
+              className={`px-3 min-h-9 rounded-lg text-xs transition-all flex items-center gap-1 ${
                 typeFilter === 'expense'
                   ? 'bg-white dark:bg-slate-700 text-rose-600 dark:text-rose-400 font-semibold shadow-sm'
                   : 'text-slate-600 dark:text-slate-400'
@@ -175,7 +175,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
           <select
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value)}
-            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-xl px-2.5 py-1.5 shrink-0 focus:outline-none shadow-sm"
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-xl px-2.5 min-h-10 shrink-0 focus:outline-none shadow-sm"
           >
             <option value="all">Semua Kategori</option>
             {categories.map(cat => (
@@ -191,7 +191,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
       <div className="space-y-2.5">
         {filteredList.length === 0 ? (
           <div className="bg-white dark:bg-slate-850/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center shadow-soft">
-            <Calendar className="w-10 h-10 text-slate-400 dark:text-slate-600 mx-auto mb-2" />
+            <Calendar className="w-10 h-10 text-slate-500 dark:text-slate-400 mx-auto mb-2" />
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-300">Tidak ada transaksi ditemukan</p>
             <p className="text-xs text-slate-500 mt-1">Coba sesuaikan kata kunci atau filter pencarian</p>
             <button
@@ -230,7 +230,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                     </p>
 
                     {/* Running balance indicator */}
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 tabular-nums leading-tight">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 tabular-nums leading-tight">
                       Saldo: <span className="text-slate-700 dark:text-slate-300 font-semibold">{formatRupiah(runningBalances[tx.id] || 0)}</span>
                     </p>
                   </div>
@@ -246,11 +246,11 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                     {tx.type === 'income' ? '+' : '-'} {formatRupiah(tx.amount)}
                   </div>
 
-                  <div className="flex items-center justify-end gap-2 mt-2">
+                  <div className="flex items-center justify-end gap-1.5 mt-1.5">
                     {tx.proof_url ? (
                       <button
                         onClick={() => onSelectProof(tx)}
-                        className="px-2 py-0.5 rounded-lg bg-brand-500/10 dark:bg-brand-500/15 border border-brand-500/30 text-brand-600 dark:text-brand-400 hover:bg-brand-500/25 text-[10px] font-semibold flex items-center gap-1 transition-all"
+                        className="px-3 min-h-9 rounded-lg bg-brand-500/10 dark:bg-brand-500/15 border border-brand-500/30 text-brand-600 dark:text-brand-400 hover:bg-brand-500/25 text-[11px] font-semibold flex items-center gap-1 transition-all"
                         title="Lihat Bukti Transfer"
                       >
                         <FileCheck2 className="w-3 h-3" />
@@ -276,7 +276,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                           };
                           input.click();
                         }}
-                        className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-500 dark:text-slate-400 hover:bg-brand-50 hover:text-brand-600 hover:border-brand-200 dark:hover:bg-brand-500/10 dark:hover:text-brand-400 text-[10px] font-semibold flex items-center gap-1 transition-all disabled:opacity-50"
+                        className="px-3 min-h-9 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-500 dark:text-slate-400 hover:bg-brand-50 hover:text-brand-600 hover:border-brand-200 dark:hover:bg-brand-500/10 dark:hover:text-brand-400 text-[11px] font-semibold flex items-center gap-1 transition-all disabled:opacity-50"
                         title="Upload Bukti"
                       >
                         {uploadingId === tx.id ? (
@@ -294,7 +294,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                           onDeleteTransaction(tx.id);
                         }
                       }}
-                      className="p-1 text-slate-400 hover:text-rose-500 dark:text-slate-500 dark:hover:text-rose-400 rounded-lg transition-colors"
+                      className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400 rounded-lg transition-colors"
                       title="Hapus Transaksi"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

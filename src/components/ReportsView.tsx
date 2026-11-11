@@ -101,7 +101,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
         <select
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
-          className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/50 appearance-none font-semibold"
+          className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-xl px-2.5 min-h-9 focus:outline-none focus:ring-2 focus:ring-brand-500/50 appearance-none font-semibold"
           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200.0/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' class='w-3 h-3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")`, backgroundPosition: 'right 0.35rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1em', paddingRight: '1.5rem' }}
         >
           <option value="all">Semua Waktu</option>
@@ -176,7 +176,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 </div>
                 <div className="text-right font-medium shrink-0">
                   <span className="text-xs text-rose-600 dark:text-rose-400 font-bold tabular-nums">{formatRupiah(cat.amount)}</span>
-                  <span className="text-[11px] text-slate-400 dark:text-slate-500 ml-1.5 tabular-nums">({cat.percentage}%)</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 ml-1.5 tabular-nums">({cat.percentage}%)</span>
                 </div>
               </div>
               <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
@@ -209,7 +209,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 </div>
                 <div className="text-right font-medium shrink-0">
                   <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">{formatRupiah(cat.amount)}</span>
-                  <span className="text-[11px] text-slate-400 dark:text-slate-500 ml-1.5 tabular-nums">({cat.percentage}%)</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 ml-1.5 tabular-nums">({cat.percentage}%)</span>
                 </div>
               </div>
               <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
