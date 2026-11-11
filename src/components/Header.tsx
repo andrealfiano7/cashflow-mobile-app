@@ -18,16 +18,16 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3.5 py-2.5 sm:px-4 sm:py-3 transition-colors">
       <div className="max-w-md mx-auto flex items-center justify-between gap-2">
         {/* App Branding */}
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center gap-2.5 min-w-0">
           <img src="/logo.png" alt="Cashflow Logo" className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-sm shrink-0" />
           <div className="min-w-0">
-            <h1 className="text-xs sm:text-sm font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5 truncate">
+            <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5 truncate leading-tight">
               Cashflow
-              <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-500/15 text-brand-600 dark:text-brand-400 border border-brand-500/30 shrink-0">
+              <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-500/15 text-brand-600 dark:text-brand-400 border border-brand-500/30 shrink-0 leading-none">
                 Mobile
               </span>
             </h1>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">Arus Kas &amp; Bukti Transfer</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate leading-tight mt-0.5">Arus Kas &amp; Bukti Transfer</p>
           </div>
         </div>
 

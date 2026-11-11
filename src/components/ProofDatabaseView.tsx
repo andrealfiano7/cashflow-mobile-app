@@ -54,8 +54,8 @@ export const ProofDatabaseView: React.FC<ProofDatabaseViewProps> = ({
             <FolderArchive className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Database Bukti Pembayaran</h2>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">Arsip berkas transfer & verifikasi keuangan</p>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">Database Bukti Pembayaran</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-normal mt-0.5">Arsip berkas transfer & verifikasi keuangan</p>
           </div>
         </div>
       </div>
@@ -188,15 +188,15 @@ export const ProofDatabaseView: React.FC<ProofDatabaseViewProps> = ({
                       )}
                     </div>
 
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate mt-1">
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate leading-snug mt-1">
                       {tx.proof_file_name || 'bukti_transfer.jpg'}
                     </h4>
 
-                    <p className="text-[11px] text-slate-700 dark:text-slate-300 font-semibold mt-0.5">
+                    <p className="text-xs text-slate-700 dark:text-slate-300 font-bold tabular-nums mt-0.5 leading-tight">
                       {formatRupiah(tx.amount)} • <span className="text-slate-500 dark:text-slate-400 font-normal">{tx.category_name}</span>
                     </p>
 
-                    <div className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+                    <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
                       <span>{formatDateIndo(tx.date)}</span>
                       <span>•</span>
                       <span>{formatBytes(tx.proof_file_size)}</span>
@@ -207,9 +207,9 @@ export const ProofDatabaseView: React.FC<ProofDatabaseViewProps> = ({
                   <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                     <button
                       onClick={() => onSelectProof(tx)}
-                      className="text-[10px] text-brand-600 dark:text-brand-400 font-semibold flex items-center gap-1 hover:underline"
+                      className="text-xs text-brand-600 dark:text-brand-400 font-semibold flex items-center gap-1 hover:underline"
                     >
-                      <Eye className="w-3 h-3" /> Lihat Berkas
+                      <Eye className="w-3.5 h-3.5" /> Lihat Berkas
                     </button>
 
                     {/* Status Toggles */}

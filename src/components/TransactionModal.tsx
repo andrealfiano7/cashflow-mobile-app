@@ -221,7 +221,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 placeholder="0"
                 value={amountStr}
                 onChange={handleAmountChange}
-                className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-300 dark:border-slate-700/80 rounded-2xl pl-11 pr-4 py-3 text-lg font-extrabold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors shadow-inner"
+                className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-300 dark:border-slate-700/80 rounded-2xl pl-11 pr-4 py-3 text-xl font-extrabold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors shadow-inner tabular-nums"
                 autoFocus
               />
             </div>

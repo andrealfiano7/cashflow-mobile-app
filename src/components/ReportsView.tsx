@@ -95,13 +95,13 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between px-1">
         <div>
-          <h2 className="text-base font-bold text-slate-900 dark:text-white">Analisis Finansial</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Rasio tabungan dan rincian alokasi dana</p>
+          <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">Analisis Finansial</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-normal mt-0.5">Rasio tabungan dan rincian alokasi dana</p>
         </div>
         <select
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
-          className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px] rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/50 appearance-none font-semibold"
+          className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/50 appearance-none font-semibold"
           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200.0/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' class='w-3 h-3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E")`, backgroundPosition: 'right 0.35rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1em', paddingRight: '1.5rem' }}
         >
           <option value="all">Semua Waktu</option>
@@ -114,13 +114,13 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
       {/* Financial Health / Savings Ratio Section */}
       <div className="bg-gradient-to-br from-white to-emerald-50/50 dark:from-slate-850 dark:to-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-soft space-y-3 transition-colors">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/20 text-brand-600 dark:text-brand-400 flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Tingkat Tabungan (Savings Rate)</p>
-              <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">{analysis.savingsRate}%</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-tight">Tingkat Tabungan (Savings Rate)</p>
+              <h3 className="text-xl font-extrabold text-slate-900 dark:text-white tabular-nums leading-snug mt-0.5">{analysis.savingsRate}%</h3>
             </div>
           </div>
           <span
@@ -146,20 +146,20 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
           />
         </div>
 
-        <p className="text-[11px] text-slate-600 dark:text-slate-400">
-          Dari total pemasukan <span className="text-slate-900 dark:text-slate-200 font-semibold">{formatRupiah(analysis.totalIncome)}</span>,
-          tersisa kas bersih sebesar <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{formatRupiah(analysis.netSavings)}</span>.
+        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          Dari total pemasukan <span className="text-slate-900 dark:text-slate-200 font-bold tabular-nums">{formatRupiah(analysis.totalIncome)}</span>,
+          tersisa kas bersih sebesar <span className="text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">{formatRupiah(analysis.netSavings)}</span>.
         </p>
 
-        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-500">
+        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
           <span>Rekomendasi Rasio 50/30/20:</span>
-          <span className="font-semibold text-slate-700 dark:text-slate-300">Target Tabungan ideal minimal 20%</span>
+          <span className="font-semibold text-slate-700 dark:text-slate-300">Target Tabungan minimal 20%</span>
         </div>
       </div>
 
       {/* Expense Allocation Breakdown */}
       <div className="bg-white dark:bg-slate-850/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-soft space-y-3 transition-colors">
-        <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+        <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5 leading-tight">
           <TrendingDown className="w-4 h-4 text-rose-500" />
           Rincian Pengeluaran per Kategori
         </h3>
@@ -168,15 +168,15 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
           {analysis.expenseCategories.map(cat => (
             <div key={cat.name} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-md bg-rose-500/10 text-rose-500 flex items-center justify-center">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-6 h-6 rounded-md bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0">
                     <CategoryIcon name={cat.name} className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-slate-800 dark:text-slate-200 font-medium">{cat.name}</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-semibold truncate">{cat.name}</span>
                 </div>
-                <div className="text-right font-medium">
-                  <span className="text-rose-600 dark:text-rose-400 font-bold">{formatRupiah(cat.amount)}</span>
-                  <span className="text-[10px] text-slate-400 dark:text-slate-500 ml-1.5 font-mono">({cat.percentage}%)</span>
+                <div className="text-right font-medium shrink-0">
+                  <span className="text-xs text-rose-600 dark:text-rose-400 font-bold tabular-nums">{formatRupiah(cat.amount)}</span>
+                  <span className="text-[11px] text-slate-400 dark:text-slate-500 ml-1.5 tabular-nums">({cat.percentage}%)</span>
                 </div>
               </div>
               <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
@@ -192,7 +192,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
 
       {/* Income Allocation Breakdown */}
       <div className="bg-white dark:bg-slate-850/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-soft space-y-3 transition-colors">
-        <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+        <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5 leading-tight">
           <TrendingUp className="w-4 h-4 text-emerald-500" />
           Sumber Pemasukan
         </h3>
@@ -201,15 +201,15 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
           {analysis.incomeCategories.map(cat => (
             <div key={cat.name} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-md bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-6 h-6 rounded-md bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
                     <CategoryIcon name={cat.name} className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-slate-800 dark:text-slate-200 font-medium">{cat.name}</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-semibold truncate">{cat.name}</span>
                 </div>
-                <div className="text-right font-medium">
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">{formatRupiah(cat.amount)}</span>
-                  <span className="text-[10px] text-slate-400 dark:text-slate-500 ml-1.5 font-mono">({cat.percentage}%)</span>
+                <div className="text-right font-medium shrink-0">
+                  <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">{formatRupiah(cat.amount)}</span>
+                  <span className="text-[11px] text-slate-400 dark:text-slate-500 ml-1.5 tabular-nums">({cat.percentage}%)</span>
                 </div>
               </div>
               <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">

@@ -106,18 +106,18 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
   return (
     <div className="space-y-4 pb-24">
       {/* Header & Export Button */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <div>
-          <h2 className="text-base font-bold text-slate-900 dark:text-white">Buku Kas (Cashflow)</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Daftar transaksi & saldo berjalan</p>
+          <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">Buku Kas (Cashflow)</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-normal mt-0.5">Daftar transaksi & saldo berjalan</p>
         </div>
         <button
           onClick={handleExportCSV}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-medium active:scale-95 transition-all shadow-sm"
-          title="Export data ke CSV"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-semibold active:scale-95 transition-all shadow-sm shrink-0"
+          title="Unduh riwayat transaksi ke format CSV / Excel"
         >
           <Download className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-          <span>Export CSV</span>
+          <span>Unduh Data</span>
         </button>
       </div>
 
@@ -209,7 +209,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
             >
               <div className="flex items-start justify-between gap-3">
                 {/* Left: Icon & Info */}
-                <div className="flex items-start gap-3 min-w-0">
+                <div className="flex items-start gap-3 min-w-0 flex-1">
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                       tx.type === 'income'
@@ -219,18 +219,18 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                   >
                     <CategoryIcon name={tx.category_name} className="w-5 h-5" />
                   </div>
-                  <div className="min-w-0">
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate leading-snug">
                       {tx.description || tx.category_name}
                     </h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap leading-tight">
                       <span className="font-medium text-slate-700 dark:text-slate-300">{tx.category_name}</span>
                       <span>•</span>
                       <span>{formatDateIndo(tx.date)}</span>
                     </p>
 
                     {/* Running balance indicator */}
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-mono">
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 tabular-nums leading-tight">
                       Saldo: <span className="text-slate-700 dark:text-slate-300 font-semibold">{formatRupiah(runningBalances[tx.id] || 0)}</span>
                     </p>
                   </div>
@@ -239,7 +239,7 @@ export const TransactionListView: React.FC<TransactionListViewProps> = ({
                 {/* Right: Amount & Actions */}
                 <div className="text-right shrink-0">
                   <div
-                    className={`text-xs font-extrabold ${
+                    className={`text-xs sm:text-sm font-extrabold tabular-nums leading-snug ${
                       tx.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                     }`}
                   >

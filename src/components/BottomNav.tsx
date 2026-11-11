@@ -32,7 +32,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     }`;
 
   const labelClass = (tab: ActiveTab) =>
-    `text-[10px] mt-1 tracking-tight transition-all duration-300 ${
+    `text-[11px] mt-1 tracking-tight transition-all duration-300 leading-tight ${
       activeTab === tab ? 'font-bold' : 'font-medium'
     }`;
 
